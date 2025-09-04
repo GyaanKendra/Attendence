@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Attendance System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #4e73df;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .profile {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3a56c4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-size: 20px;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .auth-container {
+            text-align: center;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fc;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .auth-tab.active {
+            border-bottom: 2px solid #4e73df;
+            font-weight: bold;
+            color: #4e73df;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #5a5c69;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: #4e73df;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a56c4;
+        }
+        
+        .btn-google {
+            background: #dd4b39;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-google:hover {
+            background: #c23321;
+        }
+        
+        .attendance-card {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .attendance-card h2 {
+            color: #4e73df;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+            margin: 10px;
+            min-width: 90px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4e73df;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-present {
+            background: #1cc88a;
+            color: white;
+        }
+        
+        .btn-present:hover {
+            background: #17a673;
+        }
+        
+        .btn-absent {
+            background: #e74a3b;
+            color: white;
+        }
+        
+        .btn-absent:hover {
+            background: #c03526;
+        }
+        
+        .btn-clock {
+            background: #36b9cc;
+            color: white;
+        }
+        
+        .btn-clock:hover {
+            background: #2c9faf;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4e73df;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-info {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        .history {
+            margin-top: 20px;
+        }
+        
+        .history h3 {
+            color: #4e73df;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .history-date {
+            color: #5a5c69;
+        }
+        
+        .history-status {
+            font-weight: bold;
+        }
+        
+        .status-present {
+            color: #1cc88a;
+        }
+        
+        .status-absent {
+            color: #e74a3b;
+        }
+        
+        .status-working {
+            color: #36b9cc;
+        }
+        
+        .footer {
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fc;
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .analytics-btn {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .analytics-section {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .analytics-section.active {
+            display: block;
+        }
+        
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .analytics-table th, .analytics-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .analytics-table th {
+            background: #f8f9fc;
+            color: #4e73df;
+        }
+        
+        .print-btn {
+            background: #5a5c69;
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .print-btn:hover {
+            background: #4e5070;
+        }
+        
+        @media (max-width: 500px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Attendance System</h1>
+            <p>Track your attendance and working hours</p>
+            <div class="profile">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Authentication Section -->
+            <div id="auth-section" class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="login-tab">Login</div>
+                    <div class="auth-tab" id="signup-tab">Sign Up</div>
+                </div>
+                
+                <div id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                    </div>
+                    <button class="btn btn-primary" id="login-btn">Login</button>
+                    <button class="btn btn-google" id="google-login-btn">
+                        <i class="fab fa-google"></i> Login with Google
+                    </button>
+                </div>
+                
+                <div id="signup-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" placeholder="Choose a username">
+                    </div>
+                    <button class="btn btn-primary" id="signup-btn">Sign Up</button>
+                </div>
+            </div>
+            
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="dashboard-section">
+                <div class="user-info">
+                    <h3 id="welcome-message">Welcome, User!</h3>
+                    <button class="btn btn-primary" id="logout-btn">Logout</button>
+                </div>
+                
+                <div class="attendance-card">
+                    <h2>Today's Attendance</h2>
+                    
+                    <div class="timer" id="timer">
+                        00:00:00
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-present" id="checkin-btn">Check In</button>
+                        <button class="btn btn-absent" id="absent-btn">Mark Absent</button>
+                        <button class="btn btn-clock" id="checkout-btn">Check Out</button>
+                    </div>
+                </div>
+                
+                <div class="attendance-card">
+                    <h2>This Month's Statistics</h2>
+                    
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="present-days">0</div>
+                            <div class="stat-label">Present</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="absent-days">0</div>
+                            <div class="stat-label">Absent</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="working-hours">0</div>
+                            <div class="stat-label">Hours Worked</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-btn">
+                    <button class="btn btn-primary" id="view-analytics-btn">View Attendance Analytics</button>
+                </div>
+                
+                <div class="history">
+                    <h3>Recent Attendance</h3>
+                    <div id="attendance-history">
+                        <!-- History items will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="analytics-section">
+                <h2>Attendance Analytics</h2>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="total-present">0</div>
+                        <div class="stat-label">Total Present</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-absent">0</div>
+                        <div class="stat-label">Total Absent</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-hours">0</div>
+                        <div class="stat-label">Total Hours</div>
+                    </div>
+                </div>
+                
+                <h3>Attendance Details</h3>
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Hours</th>
+                            <th>Late By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analytics-table-body">
+                        <!-- Analytics data will be generated by JavaScript -->
+                    </tbody>
+                </table>
+                
+                <button class="btn print-btn" id="print-analytics-btn">Print Report</button>
+                <button class="btn btn-primary" id="back-to-dashboard-btn">Back to Dashboard</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Employee Attendance System | Firebase Authentication</p>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration (replace with your own config)
+        // ये configuration आपको Firebase console से मिलेगा
+        const firebaseConfig = {
+  apiKey: "AIzaSyAP813YmAk1uaNOfmBSMTcLQMpd09TmxEk",
+  authDomain: "employee-attendance-7bf05.firebaseapp.com",
+  projectId: "employee-attendance-7bf05",
+  storageBucket: "employee-attendance-7bf05.firebasestorage.app",
+  messagingSenderId: "448654487783",
+  appId: "1:448654487783:web:5be903e8130b472a1f3242"
+};
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // DOM Elements
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authSection = document.getElementById('auth-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const analyticsSection = document.getElementById('analytics-section');
+        
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginBtn = document.getElementById('login-btn');
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const signupName = document.getElementById('signup-name');
+        const signupEmail = document.getElementById('signup-email');
+        const signupPassword = document.getElementById('signup-password');
+        const signupUsername = document.getElementById('signup-username');
+        const signupBtn = document.getElementById('signup-btn');
+        
+        const welcomeMessage = document.getElementById('welcome-message');
+        const logoutBtn = document.getElementById('logout-btn');
+        const timerEl = document.getElementById('timer');
+        const checkinBtn = document.getElementById('checkin-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const absentBtn = document.getElementById('absent-btn');
+        const presentDaysEl = document.getElementById('present-days');
+        const absentDaysEl = document.getElementById('absent-days');
+        const workingHoursEl = document.getElementById('working-hours');
+        const historyEl = document.getElementById('attendance-history');
+        const viewAnalyticsBtn = document.getElementById('view-analytics-btn');
+        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        const printAnalyticsBtn = document.getElementById('print-analytics-btn');
+        const totalPresentEl = document.getElementById('total-present');
+        const totalAbsentEl = document.getElementById('total-absent');
+        const totalHoursEl = document.getElementById('total-hours');
+        const analyticsTableBody = document.getElementById('analytics-table-body');
+        
+        // Variables
+        let currentUser = null;
+        let userData = null;
+        let timerInterval = null;
+        let secondsWorked = 0;
+        let isClockedIn = false;
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        
+        // Auth tab switching
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+        });
+        
+        signupTab.addEventListener('click', () => {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            signupForm.classList.add('active');
+            loginForm.classList.remove('active');
+        });
+        
+        // Authentication functions
+        loginBtn.addEventListener('click', () => {
+            const email = loginEmail.value;
+            const password = loginPassword.value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    currentUser = userCredential.user;
+                    loadUserData();
+                })
+                .catch((error) => {
+                    alert('Login error: ' + error.message);
+                });
+        });
+        
+        googleLoginBtn.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    currentUser = result.user;
+                    checkUserExists();
+                })
+                .catch((error) => {
+                    alert('Google login error: ' + error.message);
+                });
+        });
+        
+        signupBtn.addEventListener('click', () => {
+            const name = signupName.value;
+            const email = signupEmail.value;
+            const password = signupPassword.value;
+            const username = signupUsername.value;
+            
+            if (!name || !email || !password || !username) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    currentUser = userCredential.user;
+                    
+                    // Save user data to Firestore
+                    return db.collection('users').doc(currentUser.uid).set({
+                        name: name,
+                        email: email,
+                        username: username,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    loadUserData();
+                })
+                .catch((error) => {
+                    alert('Signup error: ' + error.message);
+                });
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    currentUser = null;
+                    userData = null;
+                    authSection.style.display = 'block';
+                    dashboardSection.style.display = 'none';
+                    stopTimer();
+                })
+                .catch((error) => {
+                    alert('Logout error: ' + error.message);
+                });
+        });
+        
+        // Check if user exists (for Google login)
+        function checkUserExists() {
+            db.collection('users').doc(currentUser.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        loadUserData();
+                    } else {
+                        // Create user document for Google sign-in
+                        db.collection('users').doc(currentUser.uid).set({
+                            name: currentUser.displayName,
+                            email: currentUser.email,
+                            username: currentUser.email.split('@')[0],
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        })
+                        .then(() => {
+                            loadUserData();
+                        });
+                    }
+                })
+                .catch((error) => {
+                    alert('Error checking user: ' + error.message);
+                });
+        }
+        
+        // Load user data from Firestore
+        function loadUserData() {
+            db.collection('users').doc(currentUser.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        userData = doc.data();
+                        welcomeMessage.textContent = `Welcome, ${userData.name}!`;
+                        authSection.style.display = 'none';
+                        dashboardSection.style.display = 'block';
+                        loadAttendanceData();
+                    }
+                })
+                .catch((error) => {
+                    alert('Error loading user data: ' + error.message);
+                });
+        }
+        
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData();
+            }
+        });
+        
+        // Attendance functions
+        checkinBtn.addEventListener('click', () => {
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Check if already checked in today
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).get()
+                .then((doc) => {
+                    if (doc.exists && doc.data().checkIn) {
+                        alert('You have already checked in today');
+                        return;
+                    }
+                    
+                    // Save check-in time
+                    return db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
+                        date: dateKey,
+                        checkIn: now.toISOString(),
+                        status: 'present',
+                        userId: currentUser.uid,
+                        username: userData.username
+                    }, { merge: true });
+                })
+                .then(() => {
+                    isClockedIn = true;
+                    secondsWorked = 0;
+                    startTimer();
+                    updateButtonStates('checkedIn');
+                    loadAttendanceData();
+                    alert('Checked in successfully at ' + now.toLocaleTimeString());
+                })
+                .catch((error) => {
+                    alert('Check-in error: ' + error.message);
+                });
+        });
+        
+        checkoutBtn.addEventListener('click', () => {
+            if (!isClockedIn) {
+                alert('You are not checked in');
+                return;
+            }
+            
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Calculate hours worked
+            const hoursWorked = (secondsWorked / 3600).toFixed(2);
+            
+            // Save check-out time and hours worked
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).update({
+                checkOut: now.toISOString(),
+                hoursWorked: hoursWorked
+            })
+            .then(() => {
+                stopTimer();
+                isClockedIn = false;
+                updateButtonStates('checkedOut');
+                loadAttendanceData();
+                alert('Checked out successfully. Worked: ' + hoursWorked + ' hours');
+            })
+            .catch((error) => {
+                alert('Check-out error: ' + error.message);
+            });
+        });
+        
+        absentBtn.addEventListener('click', () => {
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Mark as absent
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
+                date: dateKey,
+                status: 'absent',
+                userId: currentUser.uid,
+                username: userData.username
+            }, { merge: true })
+            .then(() => {
+                loadAttendanceData();
+                alert('Marked as absent for today');
+            })
+            .catch((error) => {
+                alert('Error marking absent: ' + error.message);
+            });
+        });
+        
+        // Timer functions
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(function() {
+                secondsWorked++;
+                updateTimerDisplay();
+            }, 1000);
+            
+            updateTimerDisplay();
+        }
+        
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function updateTimerDisplay() {
+            const hours = Math.floor(secondsWorked / 3600);
+            const minutes = Math.floor((secondsWorked % 3600) / 60);
+            const seconds = secondsWorked % 60;
+            
+            timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // Update button states based on current status
+        function updateButtonStates(status) {
+            switch(status) {
+                case 'checkedIn':
+                    checkinBtn.disabled = true;
+                    checkoutBtn.disabled = false;
+                    absentBtn.disabled = true;
+                    checkinBtn.textContent = 'Checked In';
+                    break;
+                case 'checkedOut':
+                    checkinBtn.disabled = true;
+                    checkoutBtn.disabled = true;
+                    absentBtn.disabled = true;
+                    checkinBtn.textContent = 'Checked In';
+                    checkoutBtn.textContent = 'Checked Out';
+                    break;
+                case 'absent':
+                    checkinBtn.disabled = true;
+                    checkoutBtn.disabled = true;
+                    absentBtn.disabled = true;
+                    absentBtn.textContent = 'Absent';
+                    break;
+                default:
+                    checkinBtn.disabled = false;
+                    checkoutBtn.disabled = true;
+                    absentBtn.disabled = false;
+                    checkinBtn.textContent = 'Check In';
+                    checkoutBtn.textContent = 'Check Out';
+                    absentBtn.textContent = 'Mark Absent';
+            }
+        }
+        
+        // Load attendance data
+        function loadAttendanceData() {
+            const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+            
+            // Get attendance records for current month
+            db.collection('attendance').doc(currentUser.uid).collection('records')
+                .where('date', '>=', `${monthKey}-01`)
+                .where('date', '<=', `${monthKey}-31`)
+                .get()
+                .then((querySnapshot) => {
+                    let presentCount = 0;
+                    let absentCount = 0;
+                    let totalHours = 0;
+                    const historyItems = [];
+                    
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        
+                        if (data.status === 'present') {
+                            presentCount++;
+                            if (data.hoursWorked) {
+                                totalHours += parseFloat(data.hoursWorked);
+                            }
+                            
+                            // Check if this is today's record
+                            const todayKey = formatDate(new Date());
+                            if (data.date === todayKey && data.checkIn && !data.checkOut) {
+                                // User is still clocked in
+                                isClockedIn = true;
+                                const checkInTime = new Date(data.checkIn);
+                                secondsWorked = Math.floor((new Date() - checkInTime) / 1000);
+                                startTimer();
+                                updateButtonStates('checkedIn');
+                            }
+                        } else if (data.status === 'absent') {
+                            absentCount++;
+                            
+                            // Check if this is today's record
+                            const todayKey = formatDate(new Date());
+                            if (data.date === todayKey) {
+                                updateButtonStates('absent');
+                            }
+                        }
+                        
+                        // Add to history
+                        historyItems.push(data);
+                    });
+                    
+                    // Update stats
+                    presentDaysEl.textContent = presentCount;
+                    absentDaysEl.textContent = absentCount;
+                    workingHoursEl.textContent = totalHours.toFixed(1);
+                    
+                    // Render history
+                    renderHistory(historyItems);
+                })
+                .catch((error) => {
+                    console.error('Error loading attendance data: ', error);
+                });
+        }
+        
+        // Render attendance history
+        function renderHistory(historyItems) {
+            // Clear existing history
+            historyEl.innerHTML = '';
+            
+            // Sort by date descending
+            historyItems.sort((a, b) => b.date.localeCompare(a.date));
+            
+            // Show only last 7 records
+            const recentItems = historyItems.slice(0, 7);
+            
+            // Add to history
+            recentItems.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                const dateParts = item.date.split('-');
+                const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                const formattedDate = date.toLocaleDateString('en-IN', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                let statusText = '';
+                let statusClass = '';
+                
+                if (item.status === 'present') {
+                    if (item.checkIn && item.checkOut) {
+                        statusText = `Present (${item.hoursWorked} hrs)`;
+                        statusClass = 'status-present';
+                    } else {
+                        statusText = 'Present (In Progress)';
+                        statusClass = 'status-working';
+                    }
+                } else {
+                    statusText = 'Absent';
+                    statusClass = 'status-absent';
+                }
+                
+                historyItem.innerHTML = `
+                    <span class="history-date">${formattedDate}</span>
+                    <span class="history-status ${statusClass}">${statusText}</span>
+                `;
+                
+                historyEl.appendChild(historyItem);
+            });
+            
+            // Show message if no history
+            if (recentItems.length === 0) {
+                historyEl.innerHTML = '<div class="history-item">No attendance records yet</div>';
+            }
+        }
+        
+        // Format date as YYYY-MM-DD
+        function formatDate(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+        
+        // Analytics functions
+        viewAnalyticsBtn.addEventListener('click', () => {
+            loadAnalyticsData();
+            dashboardSection.style.display = 'none';
+            analyticsSection.style.display = 'block';
+        });
+        
+        backToDashboardBtn.addEventListener('click', () => {
+            analyticsSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+        });
+        
+        printAnalyticsBtn.addEventListener('click', () => {
+            window.print();
+        });
+        
+        function loadAnalyticsData() {
+            // Get all attendance records
+            db.collection('attendance').doc(currentUser.uid).collection('records')
+                .orderBy('date', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    let totalPresent = 0;
+                    let totalAbsent = 0;
+                    let totalHours = 0;
+                    const analyticsData = [];
+                    
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        
+                        if (data.status === 'present') {
+                            totalPresent++;
+                            if (data.hoursWorked) {
+                                totalHours += parseFloat(data.hoursWorked);
+                            }
+                        } else if (data.status === 'absent') {
+                            totalAbsent++;
+                        }
+                        
+                        analyticsData.push(data);
+                    });
+                    
+                    // Update analytics stats
+                    totalPresentEl.textContent = totalPresent;
+                    totalAbsentEl.textContent = totalAbsent;
+                    totalHoursEl.textContent = totalHours.toFixed(1);
+                    
+                    // Render analytics table
+                    renderAnalyticsTable(analyticsData);
+                })
+                .catch((error) => {
+                    console.error('Error loading analytics data: ', error);
+                });
+        }
+        
+        function renderAnalyticsTable(data) {
+            // Clear existing table
+            analyticsTableBody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const dateParts = item.date.split('-');
+                const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                const formattedDate = date.toLocaleDateString('en-IN');
+                
+                let statusText = '';
+                let checkInTime = '-';
+                let checkOutTime = '-';
+                let hoursWorked = '-';
+                let lateBy = '-';
+                
+                if (item.status === 'present') {
+                    statusText = 'Present';
+                    
+                    if (item.checkIn) {
+                        const checkIn = new Date(item.checkIn);
+                        checkInTime = checkIn.toLocaleTimeString('en-IN');
+                        
+                        // Calculate if late (assuming 9:30 AM as start time)
+                        const startTime = new Date(checkIn);
+                        startTime.setHours(9, 30, 0, 0);
+                        
+                        if (checkIn > startTime) {
+                            const lateMs = checkIn - startTime;
+                            const lateMins = Math.floor(lateMs / 60000);
+                            lateBy = `${lateMins} mins`;
+                        }
+                    }
+                    
+                    if (item.checkOut) {
+                        const checkOut = new Date(item.checkOut);
+                        checkOutTime = checkOut.toLocaleTimeString('en-IN');
+                    }
+                    
+                    if (item.hoursWorked) {
+                        hoursWorked = item.hoursWorked + ' hrs';
+                    }
+                } else {
+                    statusText = 'Absent';
+                }
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${statusText}</td>
+                    <td>${checkInTime}</td>
+                    <td>${checkOutTime}</td>
+                    <td>${hoursWorked}</td>
+                    <td>${lateBy}</td>
+                `;
+                
+                analyticsTableBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
