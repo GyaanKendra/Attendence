@@ -17,7 +17,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #1a2a6c 0%, #2b5876 100%);
             color: #333;
             min-height: 100vh;
             padding: 20px;
@@ -28,24 +28,25 @@
         
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
         
         .header {
-            background: #4e73df;
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
             color: white;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             position: relative;
         }
         
         .header h1 {
-            font-size: 22px;
+            font-size: 24px;
             margin-bottom: 5px;
+            font-weight: 600;
         }
         
         .header p {
@@ -60,16 +61,22 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: #3a56c4;
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid white;
             font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .profile:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .content {
-            padding: 20px;
+            padding: 25px;
         }
         
         .auth-container {
@@ -79,21 +86,23 @@
         .auth-tabs {
             display: flex;
             margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fc;
         }
         
         .auth-tab {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
-            background: #f8f9fc;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
         }
         
         .auth-tab.active {
-            border-bottom: 2px solid #4e73df;
+            background: #4e73df;
+            color: white;
             font-weight: bold;
-            color: #4e73df;
         }
         
         .auth-form {
@@ -105,34 +114,52 @@
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         
         .form-group label {
             display: block;
             text-align: left;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 500;
             color: #5a5c69;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 1px solid #ddd;
             border-radius: 10px;
             font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
+            outline: none;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .time-inputs input {
+            flex: 1;
         }
         
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: none;
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
+            font-size: 16px;
         }
         
         .btn-primary {
@@ -142,40 +169,36 @@
         
         .btn-primary:hover {
             background: #3a56c4;
-        }
-        
-        .btn-google {
-            background: #dd4b39;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .btn-google:hover {
-            background: #c23321;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .attendance-card {
             background: #f8f9fc;
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .attendance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         
         .attendance-card h2 {
             color: #4e73df;
             margin-bottom: 15px;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: 600;
         }
         
         .stats {
             display: flex;
             justify-content: space-around;
-            margin: 15px 0;
+            margin: 20px 0;
             flex-wrap: wrap;
         }
         
@@ -183,6 +206,10 @@
             text-align: center;
             margin: 10px;
             min-width: 90px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
         
         .stat-value {
@@ -198,7 +225,7 @@
         
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-top: 20px;
         }
         
@@ -209,6 +236,8 @@
         
         .btn-present:hover {
             background: #17a673;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .btn-absent {
@@ -218,6 +247,8 @@
         
         .btn-absent:hover {
             background: #c03526;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .btn-clock {
@@ -227,25 +258,29 @@
         
         .btn-clock:hover {
             background: #2c9faf;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .timer {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #4e73df;
-            margin: 15px 0;
-            padding: 10px;
+            margin: 20px 0;
+            padding: 15px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            font-family: monospace;
         }
         
         .user-info {
             text-align: center;
-            padding: 10px;
+            padding: 15px;
             background: #f8f9fc;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
         
         .dashboard-section {
@@ -257,20 +292,28 @@
         }
         
         .history {
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .history h3 {
             color: #4e73df;
-            margin-bottom: 10px;
-            font-size: 16px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
         }
         
         .history-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #e3e6f0;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 12px;
         }
         
         .history-date {
@@ -293,8 +336,12 @@
             color: #36b9cc;
         }
         
+        .status-overtime {
+            color: #f6c23e;
+        }
+        
         .footer {
-            padding: 15px;
+            padding: 20px;
             text-align: center;
             background: #f8f9fc;
             color: #6c757d;
@@ -303,7 +350,7 @@
         
         .analytics-btn {
             text-align: center;
-            margin: 20px 0;
+            margin: 25px 0;
         }
         
         .analytics-section {
@@ -318,18 +365,30 @@
         .analytics-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
         }
         
         .analytics-table th, .analytics-table td {
-            padding: 10px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #e3e6f0;
         }
         
         .analytics-table th {
+            background: #4e73df;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .analytics-table tr:nth-child(even) {
             background: #f8f9fc;
-            color: #4e73df;
+        }
+        
+        .analytics-table tr:hover {
+            background: #e9ecef;
         }
         
         .print-btn {
@@ -340,6 +399,47 @@
         
         .print-btn:hover {
             background: #4e5070;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .overtime-badge {
+            background: #f6c23e;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .report-header {
+            display: none;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .analytics-section, .analytics-section * {
+                visibility: visible;
+            }
+            .analytics-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .report-header {
+                display: block;
+                text-align: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #4e73df;
+            }
+            .btn {
+                display: none;
+            }
         }
         
         @media (max-width: 500px) {
@@ -361,6 +461,11 @@
             
             .action-buttons {
                 flex-direction: column;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+                gap: 5px;
             }
         }
     </style>
@@ -393,9 +498,6 @@
                         <input type="password" id="login-password" placeholder="Enter your password">
                     </div>
                     <button class="btn btn-primary" id="login-btn">Login</button>
-                    <button class="btn btn-google" id="google-login-btn">
-                        <i class="fab fa-google"></i> Login with Google
-                    </button>
                 </div>
                 
                 <div id="signup-form" class="auth-form">
@@ -415,6 +517,22 @@
                         <label for="signup-username">Username</label>
                         <input type="text" id="signup-username" placeholder="Choose a username">
                     </div>
+                    <div class="form-group">
+                        <label for="signup-mobile">Mobile Number</label>
+                        <input type="tel" id="signup-mobile" placeholder="Enter your mobile number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Office Timings</label>
+                        <div class="time-inputs">
+                            <input type="time" id="signup-timein" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="signup-timeout" value="18:00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-working-hours">Daily Working Hours</label>
+                        <input type="number" id="signup-working-hours" placeholder="Enter daily working hours" value="8" step="0.5" min="1" max="24">
+                    </div>
                     <button class="btn btn-primary" id="signup-btn">Sign Up</button>
                 </div>
             </div>
@@ -423,6 +541,7 @@
             <div id="dashboard-section" class="dashboard-section">
                 <div class="user-info">
                     <h3 id="welcome-message">Welcome, User!</h3>
+                    <p id="user-office-hours">Office Hours: 9:00 AM to 6:00 PM</p>
                     <button class="btn btn-primary" id="logout-btn">Logout</button>
                 </div>
                 
@@ -456,6 +575,10 @@
                             <div class="stat-value" id="working-hours">0</div>
                             <div class="stat-label">Hours Worked</div>
                         </div>
+                        <div class="stat">
+                            <div class="stat-value" id="overtime-hours">0</div>
+                            <div class="stat-label">Overtime</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -473,6 +596,12 @@
             
             <!-- Analytics Section -->
             <div id="analytics-section" class="analytics-section">
+                <div class="report-header">
+                    <h2>Employee Attendance Report</h2>
+                    <p id="report-employee-name">Employee: John Doe</p>
+                    <p id="report-period">Period: January 2023</p>
+                </div>
+                
                 <h2>Attendance Analytics</h2>
                 
                 <div class="stats">
@@ -488,6 +617,10 @@
                         <div class="stat-value" id="total-hours">0</div>
                         <div class="stat-label">Total Hours</div>
                     </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-overtime">0</div>
+                        <div class="stat-label">Overtime Hours</div>
+                    </div>
                 </div>
                 
                 <h3>Attendance Details</h3>
@@ -499,6 +632,7 @@
                             <th>Check In</th>
                             <th>Check Out</th>
                             <th>Hours</th>
+                            <th>Overtime</th>
                             <th>Late By</th>
                         </tr>
                     </thead>
@@ -513,21 +647,20 @@
         </div>
         
         <div class="footer">
-            <p>© 2023 Employee Attendance System | Firebase Authentication</p>
+            <p>© 2023 Employee Attendance System | Premium Edition</p>
         </div>
     </div>
 
     <script>
-        // Firebase configuration (replace with your own config)
-        // ये configuration आपको Firebase console से मिलेगा
+        // Firebase configuration
         const firebaseConfig = {
-  apiKey: "AIzaSyAP813YmAk1uaNOfmBSMTcLQMpd09TmxEk",
-  authDomain: "employee-attendance-7bf05.firebaseapp.com",
-  projectId: "employee-attendance-7bf05",
-  storageBucket: "employee-attendance-7bf05.firebasestorage.app",
-  messagingSenderId: "448654487783",
-  appId: "1:448654487783:web:5be903e8130b472a1f3242"
-};
+            apiKey: "AIzaSyAP813YmAk1uaNOfmBSMTcLQMpd09TmxEk",
+            authDomain: "employee-attendance-7bf05.firebaseapp.com",
+            projectId: "employee-attendance-7bf05",
+            storageBucket: "employee-attendance-7bf05.firebasestorage.app",
+            messagingSenderId: "448654487783",
+            appId: "1:448654487783:web:5be903e8130b472a1f3242"
+        };
         
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -546,14 +679,18 @@
         const loginEmail = document.getElementById('login-email');
         const loginPassword = document.getElementById('login-password');
         const loginBtn = document.getElementById('login-btn');
-        const googleLoginBtn = document.getElementById('google-login-btn');
         const signupName = document.getElementById('signup-name');
         const signupEmail = document.getElementById('signup-email');
         const signupPassword = document.getElementById('signup-password');
         const signupUsername = document.getElementById('signup-username');
+        const signupMobile = document.getElementById('signup-mobile');
+        const signupTimeIn = document.getElementById('signup-timein');
+        const signupTimeOut = document.getElementById('signup-timeout');
+        const signupWorkingHours = document.getElementById('signup-working-hours');
         const signupBtn = document.getElementById('signup-btn');
         
         const welcomeMessage = document.getElementById('welcome-message');
+        const userOfficeHours = document.getElementById('user-office-hours');
         const logoutBtn = document.getElementById('logout-btn');
         const timerEl = document.getElementById('timer');
         const checkinBtn = document.getElementById('checkin-btn');
@@ -562,6 +699,7 @@
         const presentDaysEl = document.getElementById('present-days');
         const absentDaysEl = document.getElementById('absent-days');
         const workingHoursEl = document.getElementById('working-hours');
+        const overtimeHoursEl = document.getElementById('overtime-hours');
         const historyEl = document.getElementById('attendance-history');
         const viewAnalyticsBtn = document.getElementById('view-analytics-btn');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
@@ -569,7 +707,10 @@
         const totalPresentEl = document.getElementById('total-present');
         const totalAbsentEl = document.getElementById('total-absent');
         const totalHoursEl = document.getElementById('total-hours');
+        const totalOvertimeEl = document.getElementById('total-overtime');
         const analyticsTableBody = document.getElementById('analytics-table-body');
+        const reportEmployeeName = document.getElementById('report-employee-name');
+        const reportPeriod = document.getElementById('report-period');
         
         // Variables
         let currentUser = null;
@@ -580,6 +721,9 @@
         let currentDate = new Date();
         let currentMonth = currentDate.getMonth();
         let currentYear = currentDate.getFullYear();
+        let officeStartTime = "09:00";
+        let officeEndTime = "18:00";
+        let dailyWorkingHours = 8;
         
         // Auth tab switching
         loginTab.addEventListener('click', () => {
@@ -616,27 +760,33 @@
                 });
         });
         
-        googleLoginBtn.addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    currentUser = result.user;
-                    checkUserExists();
-                })
-                .catch((error) => {
-                    alert('Google login error: ' + error.message);
-                });
-        });
-        
         signupBtn.addEventListener('click', () => {
             const name = signupName.value;
             const email = signupEmail.value;
             const password = signupPassword.value;
             const username = signupUsername.value;
+            const mobile = signupMobile.value;
+            const timeIn = signupTimeIn.value;
+            const timeOut = signupTimeOut.value;
+            const workingHours = parseFloat(signupWorkingHours.value);
             
-            if (!name || !email || !password || !username) {
-                alert('Please fill all fields');
+            if (!name || !email || !password || !username || !mobile) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            if (!mobile.match(/^[0-9]{10}$/)) {
+                alert('Please enter a valid 10-digit mobile number');
+                return;
+            }
+            
+            if (!timeIn || !timeOut) {
+                alert('Please set office timings');
+                return;
+            }
+            
+            if (!workingHours || workingHours <= 0 || workingHours > 24) {
+                alert('Please enter valid daily working hours (1-24)');
                 return;
             }
             
@@ -649,6 +799,10 @@
                         name: name,
                         email: email,
                         username: username,
+                        mobile: mobile,
+                        officeTimeIn: timeIn,
+                        officeTimeOut: timeOut,
+                        dailyWorkingHours: workingHours,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 })
@@ -674,30 +828,6 @@
                 });
         });
         
-        // Check if user exists (for Google login)
-        function checkUserExists() {
-            db.collection('users').doc(currentUser.uid).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        loadUserData();
-                    } else {
-                        // Create user document for Google sign-in
-                        db.collection('users').doc(currentUser.uid).set({
-                            name: currentUser.displayName,
-                            email: currentUser.email,
-                            username: currentUser.email.split('@')[0],
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        })
-                        .then(() => {
-                            loadUserData();
-                        });
-                    }
-                })
-                .catch((error) => {
-                    alert('Error checking user: ' + error.message);
-                });
-        }
-        
         // Load user data from Firestore
         function loadUserData() {
             db.collection('users').doc(currentUser.uid).get()
@@ -705,6 +835,18 @@
                     if (doc.exists) {
                         userData = doc.data();
                         welcomeMessage.textContent = `Welcome, ${userData.name}!`;
+                        
+                        // Set office timings from user data
+                        if (userData.officeTimeIn && userData.officeTimeOut) {
+                            officeStartTime = userData.officeTimeIn;
+                            officeEndTime = userData.officeTimeOut;
+                            userOfficeHours.textContent = `Office Hours: ${formatTimeForDisplay(officeStartTime)} to ${formatTimeForDisplay(officeEndTime)}`;
+                        }
+                        
+                        if (userData.dailyWorkingHours) {
+                            dailyWorkingHours = userData.dailyWorkingHours;
+                        }
+                        
                         authSection.style.display = 'none';
                         dashboardSection.style.display = 'block';
                         loadAttendanceData();
@@ -742,7 +884,10 @@
                         checkIn: now.toISOString(),
                         status: 'present',
                         userId: currentUser.uid,
-                        username: userData.username
+                        username: userData.username,
+                        officeStartTime: officeStartTime,
+                        officeEndTime: officeEndTime,
+                        dailyWorkingHours: dailyWorkingHours
                     }, { merge: true });
                 })
                 .then(() => {
@@ -767,20 +912,22 @@
             const now = new Date();
             const dateKey = formatDate(now);
             
-            // Calculate hours worked
-            const hoursWorked = (secondsWorked / 3600).toFixed(2);
+            // Calculate hours worked and overtime
+            const { hoursWorked, overtime } = calculateHoursWorked();
             
             // Save check-out time and hours worked
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).update({
                 checkOut: now.toISOString(),
-                hoursWorked: hoursWorked
+                hoursWorked: hoursWorked,
+                overtime: overtime
             })
             .then(() => {
                 stopTimer();
                 isClockedIn = false;
                 updateButtonStates('checkedOut');
                 loadAttendanceData();
-                alert('Checked out successfully. Worked: ' + hoursWorked + ' hours');
+                alert('Checked out successfully. Worked: ' + hoursWorked + ' hours' + 
+                      (overtime > 0 ? ' (Overtime: ' + overtime + ' hours)' : ''));
             })
             .catch((error) => {
                 alert('Check-out error: ' + error.message);
@@ -796,7 +943,10 @@
                 date: dateKey,
                 status: 'absent',
                 userId: currentUser.uid,
-                username: userData.username
+                username: userData.username,
+                officeStartTime: officeStartTime,
+                officeEndTime: officeEndTime,
+                dailyWorkingHours: dailyWorkingHours
             }, { merge: true })
             .then(() => {
                 loadAttendanceData();
@@ -806,6 +956,23 @@
                 alert('Error marking absent: ' + error.message);
             });
         });
+        
+        // Calculate hours worked and overtime based on office timings
+        function calculateHoursWorked() {
+            // Calculate total hours worked
+            const totalHours = (secondsWorked / 3600).toFixed(2);
+            
+            // Calculate overtime (hours beyond the scheduled daily working hours)
+            let overtime = 0;
+            if (totalHours > dailyWorkingHours) {
+                overtime = (totalHours - dailyWorkingHours).toFixed(2);
+            }
+            
+            return {
+                hoursWorked: totalHours,
+                overtime: overtime
+            };
+        }
         
         // Timer functions
         function startTimer() {
@@ -879,6 +1046,7 @@
                     let presentCount = 0;
                     let absentCount = 0;
                     let totalHours = 0;
+                    let totalOvertime = 0;
                     const historyItems = [];
                     
                     querySnapshot.forEach((doc) => {
@@ -888,6 +1056,9 @@
                             presentCount++;
                             if (data.hoursWorked) {
                                 totalHours += parseFloat(data.hoursWorked);
+                            }
+                            if (data.overtime) {
+                                totalOvertime += parseFloat(data.overtime);
                             }
                             
                             // Check if this is today's record
@@ -918,6 +1089,7 @@
                     presentDaysEl.textContent = presentCount;
                     absentDaysEl.textContent = absentCount;
                     workingHoursEl.textContent = totalHours.toFixed(1);
+                    overtimeHoursEl.textContent = totalOvertime.toFixed(1);
                     
                     // Render history
                     renderHistory(historyItems);
@@ -959,6 +1131,11 @@
                     if (item.checkIn && item.checkOut) {
                         statusText = `Present (${item.hoursWorked} hrs)`;
                         statusClass = 'status-present';
+                        
+                        // Add overtime badge if applicable
+                        if (item.overtime && item.overtime > 0) {
+                            statusText += ` <span class="overtime-badge">+${item.overtime}h OT</span>`;
+                        }
                     } else {
                         statusText = 'Present (In Progress)';
                         statusClass = 'status-working';
@@ -987,6 +1164,15 @@
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         }
         
+        // Format time for display (convert 24h to 12h)
+        function formatTimeForDisplay(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            const h = parseInt(hours);
+            const period = h >= 12 ? 'PM' : 'AM';
+            const displayHours = h % 12 || 12;
+            return `${displayHours}:${minutes} ${period}`;
+        }
+        
         // Analytics functions
         viewAnalyticsBtn.addEventListener('click', () => {
             loadAnalyticsData();
@@ -1000,6 +1186,14 @@
         });
         
         printAnalyticsBtn.addEventListener('click', () => {
+            // Set report header information
+            reportEmployeeName.textContent = `Employee: ${userData.name}`;
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            reportPeriod.textContent = `Period: ${monthNames[currentMonth]} ${currentYear}`;
+            
             window.print();
         });
         
@@ -1012,6 +1206,7 @@
                     let totalPresent = 0;
                     let totalAbsent = 0;
                     let totalHours = 0;
+                    let totalOvertime = 0;
                     const analyticsData = [];
                     
                     querySnapshot.forEach((doc) => {
@@ -1021,6 +1216,9 @@
                             totalPresent++;
                             if (data.hoursWorked) {
                                 totalHours += parseFloat(data.hoursWorked);
+                            }
+                            if (data.overtime) {
+                                totalOvertime += parseFloat(data.overtime);
                             }
                         } else if (data.status === 'absent') {
                             totalAbsent++;
@@ -1033,6 +1231,7 @@
                     totalPresentEl.textContent = totalPresent;
                     totalAbsentEl.textContent = totalAbsent;
                     totalHoursEl.textContent = totalHours.toFixed(1);
+                    totalOvertimeEl.textContent = totalOvertime.toFixed(1);
                     
                     // Render analytics table
                     renderAnalyticsTable(analyticsData);
@@ -1057,6 +1256,7 @@
                 let checkInTime = '-';
                 let checkOutTime = '-';
                 let hoursWorked = '-';
+                let overtime = '-';
                 let lateBy = '-';
                 
                 if (item.status === 'present') {
@@ -1066,14 +1266,19 @@
                         const checkIn = new Date(item.checkIn);
                         checkInTime = checkIn.toLocaleTimeString('en-IN');
                         
-                        // Calculate if late (assuming 9:30 AM as start time)
-                        const startTime = new Date(checkIn);
-                        startTime.setHours(9, 30, 0, 0);
-                        
-                        if (checkIn > startTime) {
-                            const lateMs = checkIn - startTime;
-                            const lateMins = Math.floor(lateMs / 60000);
-                            lateBy = `${lateMins} mins`;
+                        // Calculate if late based on office start time
+                        if (item.officeStartTime) {
+                            const [officeHours, officeMins] = item.officeStartTime.split(':');
+                            const startTime = new Date(checkIn);
+                            startTime.setHours(parseInt(officeHours), parseInt(officeMins), 0, 0);
+                            
+                            if (checkIn > startTime) {
+                                const lateMs = checkIn - startTime;
+                                const lateMins = Math.floor(lateMs / 60000);
+                                lateBy = `${lateMins} mins`;
+                            } else {
+                                lateBy = 'On time';
+                            }
                         }
                     }
                     
@@ -1083,7 +1288,11 @@
                     }
                     
                     if (item.hoursWorked) {
-                        hoursWorked = item.hoursWorked + ' hrs';
+                        hoursWorked = item.hoursWorked;
+                    }
+                    
+                    if (item.overtime) {
+                        overtime = item.overtime > 0 ? item.overtime + ' hrs' : '-';
                     }
                 } else {
                     statusText = 'Absent';
@@ -1095,12 +1304,29 @@
                     <td>${checkInTime}</td>
                     <td>${checkOutTime}</td>
                     <td>${hoursWorked}</td>
+                    <td>${overtime}</td>
                     <td>${lateBy}</td>
                 `;
                 
                 analyticsTableBody.appendChild(row);
             });
+            
+            // Show message if no data
+            if (data.length === 0) {
+                analyticsTableBody.innerHTML = '<tr><td colspan="7">No attendance records found</td></tr>';
+            }
         }
+        
+        // Initialize the app
+        function initApp() {
+            authSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
+            analyticsSection.style.display = 'none';
+            updateButtonStates('default');
+        }
+        
+        // Run the app
+        initApp();
     </script>
 </body>
 </html>
