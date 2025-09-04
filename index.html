@@ -20,7 +20,7 @@
             background: linear-gradient(135deg, #1a2a6c 0%, #2b5876 100%);
             color: #333;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,23 +28,24 @@
         
         .container {
             width: 100%;
-            max-width: 550px;
+            max-width: 100%;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+            margin: 0 auto;
         }
         
         .header {
             background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
             color: white;
-            padding: 25px;
+            padding: 20px 15px;
             text-align: center;
             position: relative;
         }
         
         .header h1 {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 5px;
             font-weight: 600;
         }
@@ -56,27 +57,21 @@
         
         .profile {
             position: absolute;
-            right: 20px;
-            top: 20px;
-            width: 50px;
-            height: 50px;
+            right: 15px;
+            top: 15px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid white;
-            font-size: 20px;
-            transition: all 0.3s;
-        }
-        
-        .profile:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.3);
+            font-size: 18px;
         }
         
         .content {
-            padding: 25px;
+            padding: 20px 15px;
         }
         
         .auth-container {
@@ -93,10 +88,11 @@
         
         .auth-tab {
             flex: 1;
-            padding: 12px;
+            padding: 12px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
         }
         
         .auth-tab.active {
@@ -114,7 +110,7 @@
         }
         
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
         
         .form-group label {
@@ -123,26 +119,20 @@
             margin-bottom: 6px;
             font-weight: 500;
             color: #5a5c69;
+            font-size: 14px;
         }
         
         .form-group input {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus {
-            border-color: #4e73df;
-            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
-            outline: none;
         }
         
         .time-inputs {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
         
@@ -150,11 +140,16 @@
             flex: 1;
         }
         
+        .time-inputs span {
+            font-size: 14px;
+            color: #5a5c69;
+        }
+        
         .btn {
             width: 100%;
             padding: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
@@ -169,64 +164,67 @@
         
         .btn-primary:hover {
             background: #3a56c4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .attendance-card {
             background: #f8f9fc;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
             text-align: center;
-            transition: all 0.3s;
-        }
-        
-        .attendance-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         
         .attendance-card h2 {
             color: #4e73df;
             margin-bottom: 15px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
         }
         
         .stats {
             display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
             flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 15px 0;
+            gap: 10px;
         }
         
         .stat {
             text-align: center;
-            margin: 10px;
-            min-width: 90px;
-            padding: 15px;
+            min-width: 80px;
+            padding: 12px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            margin: 5px;
         }
         
         .stat-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #4e73df;
         }
         
         .stat-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #6c757d;
+            margin-top: 5px;
         }
         
         .action-buttons {
             display: flex;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-top: 20px;
+        }
+        
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+            margin-top: 0;
+            padding: 12px;
         }
         
         .btn-present {
@@ -236,8 +234,6 @@
         
         .btn-present:hover {
             background: #17a673;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .btn-absent {
@@ -247,8 +243,6 @@
         
         .btn-absent:hover {
             background: #c03526;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .btn-clock {
@@ -258,19 +252,26 @@
         
         .btn-clock:hover {
             background: #2c9faf;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-holiday {
+            background: #f6c23e;
+            color: white;
+        }
+        
+        .btn-holiday:hover {
+            background: #dda20a;
         }
         
         .timer {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #4e73df;
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 12px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
             font-family: monospace;
         }
         
@@ -278,9 +279,9 @@
             text-align: center;
             padding: 15px;
             background: #f8f9fc;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         
         .dashboard-section {
@@ -292,28 +293,22 @@
         }
         
         .history {
-            margin-top: 25px;
+            margin-top: 20px;
         }
         
         .history h3 {
             color: #4e73df;
-            margin-bottom: 15px;
-            font-size: 18px;
+            margin-bottom: 12px;
+            font-size: 16px;
             font-weight: 600;
         }
         
         .history-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #e3e6f0;
-            transition: all 0.3s;
-        }
-        
-        .history-item:hover {
-            background: #f8f9fc;
-            border-radius: 8px;
-            padding: 12px;
+            font-size: 14px;
         }
         
         .history-date {
@@ -336,12 +331,16 @@
             color: #36b9cc;
         }
         
-        .status-overtime {
+        .status-holiday {
             color: #f6c23e;
         }
         
+        .status-overtime {
+            color: #fd7e14;
+        }
+        
         .footer {
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             background: #f8f9fc;
             color: #6c757d;
@@ -350,45 +349,45 @@
         
         .analytics-btn {
             text-align: center;
-            margin: 25px 0;
+            margin: 20px 0;
         }
         
         .analytics-section {
             display: none;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .analytics-section.active {
             display: block;
         }
         
+        .analytics-table-container {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
         .analytics-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
+            min-width: 600px;
         }
         
         .analytics-table th, .analytics-table td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #e3e6f0;
+            font-size: 14px;
         }
         
         .analytics-table th {
             background: #4e73df;
             color: white;
             font-weight: 600;
+            white-space: nowrap;
         }
         
         .analytics-table tr:nth-child(even) {
             background: #f8f9fc;
-        }
-        
-        .analytics-table tr:hover {
-            background: #e9ecef;
         }
         
         .print-btn {
@@ -399,22 +398,129 @@
         
         .print-btn:hover {
             background: #4e5070;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .overtime-badge {
+            background: #fd7e14;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        .holiday-badge {
             background: #f6c23e;
             color: #fff;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: bold;
-            margin-left: 5px;
+            margin-left: 4px;
         }
         
         .report-header {
             display: none;
+        }
+        
+        .holiday-section {
+            margin-top: 20px;
+        }
+        
+        .holiday-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e3e6f0;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+        }
+        
+        .holiday-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        
+        .holiday-item:last-child {
+            border-bottom: none;
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .header p {
+                font-size: 13px;
+            }
+            
+            .profile {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .stat {
+                min-width: 70px;
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .timer {
+                font-size: 22px;
+                padding: 10px;
+            }
+            
+            .attendance-card h2 {
+                font-size: 16px;
+            }
+            
+            .history h3 {
+                font-size: 15px;
+            }
+            
+            .history-item {
+                font-size: 13px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .header {
+                padding: 25px;
+            }
         }
         
         @media print {
@@ -439,33 +545,6 @@
             }
             .btn {
                 display: none;
-            }
-        }
-        
-        @media (max-width: 500px) {
-            .container {
-                border-radius: 15px;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .stat-value {
-                font-size: 24px;
-            }
-            
-            .stats {
-                justify-content: center;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .time-inputs {
-                flex-direction: column;
-                gap: 5px;
             }
         }
     </style>
@@ -555,6 +634,7 @@
                     <div class="action-buttons">
                         <button class="btn btn-present" id="checkin-btn">Check In</button>
                         <button class="btn btn-absent" id="absent-btn">Mark Absent</button>
+                        <button class="btn btn-holiday" id="holiday-btn">Mark Holiday</button>
                         <button class="btn btn-clock" id="checkout-btn">Check Out</button>
                     </div>
                 </div>
@@ -572,12 +652,34 @@
                             <div class="stat-label">Absent</div>
                         </div>
                         <div class="stat">
+                            <div class="stat-value" id="holiday-days">0</div>
+                            <div class="stat-label">Holidays</div>
+                        </div>
+                        <div class="stat">
                             <div class="stat-value" id="working-hours">0</div>
-                            <div class="stat-label">Hours Worked</div>
+                            <div class="stat-label">Hours</div>
                         </div>
                         <div class="stat">
                             <div class="stat-value" id="overtime-hours">0</div>
                             <div class="stat-label">Overtime</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="holiday-section">
+                    <h3>Upcoming Holidays</h3>
+                    <div class="holiday-list" id="holiday-list">
+                        <div class="holiday-item">
+                            <span>15 August - Independence Day</span>
+                            <span class="status-holiday">Holiday</span>
+                        </div>
+                        <div class="holiday-item">
+                            <span>2 October - Gandhi Jayanti</span>
+                            <span class="status-holiday">Holiday</span>
+                        </div>
+                        <div class="holiday-item">
+                            <span>25 December - Christmas</span>
+                            <span class="status-holiday">Holiday</span>
                         </div>
                     </div>
                 </div>
@@ -614,6 +716,10 @@
                         <div class="stat-label">Total Absent</div>
                     </div>
                     <div class="stat">
+                        <div class="stat-value" id="total-holidays">0</div>
+                        <div class="stat-label">Total Holidays</div>
+                    </div>
+                    <div class="stat">
                         <div class="stat-value" id="total-hours">0</div>
                         <div class="stat-label">Total Hours</div>
                     </div>
@@ -624,22 +730,24 @@
                 </div>
                 
                 <h3>Attendance Details</h3>
-                <table class="analytics-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Check In</th>
-                            <th>Check Out</th>
-                            <th>Hours</th>
-                            <th>Overtime</th>
-                            <th>Late By</th>
-                        </tr>
-                    </thead>
-                    <tbody id="analytics-table-body">
-                        <!-- Analytics data will be generated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="analytics-table-container">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Hours</th>
+                                <th>Overtime</th>
+                                <th>Late By</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-table-body">
+                            <!-- Analytics data will be generated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
                 
                 <button class="btn print-btn" id="print-analytics-btn">Print Report</button>
                 <button class="btn btn-primary" id="back-to-dashboard-btn">Back to Dashboard</button>
@@ -696,16 +804,20 @@
         const checkinBtn = document.getElementById('checkin-btn');
         const checkoutBtn = document.getElementById('checkout-btn');
         const absentBtn = document.getElementById('absent-btn');
+        const holidayBtn = document.getElementById('holiday-btn');
         const presentDaysEl = document.getElementById('present-days');
         const absentDaysEl = document.getElementById('absent-days');
+        const holidayDaysEl = document.getElementById('holiday-days');
         const workingHoursEl = document.getElementById('working-hours');
         const overtimeHoursEl = document.getElementById('overtime-hours');
         const historyEl = document.getElementById('attendance-history');
+        const holidayListEl = document.getElementById('holiday-list');
         const viewAnalyticsBtn = document.getElementById('view-analytics-btn');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
         const printAnalyticsBtn = document.getElementById('print-analytics-btn');
         const totalPresentEl = document.getElementById('total-present');
         const totalAbsentEl = document.getElementById('total-absent');
+        const totalHolidaysEl = document.getElementById('total-holidays');
         const totalHoursEl = document.getElementById('total-hours');
         const totalOvertimeEl = document.getElementById('total-overtime');
         const analyticsTableBody = document.getElementById('analytics-table-body');
@@ -724,6 +836,16 @@
         let officeStartTime = "09:00";
         let officeEndTime = "18:00";
         let dailyWorkingHours = 8;
+        
+        // Predefined holidays (can be extended)
+        const predefinedHolidays = [
+            { date: "2025-01-26", name: "Republic Day" },
+            { date: "2025-03-29", name: "Holi" },
+            { date: "2025-04-14", name: "Ambedkar Jayanti" },
+            { date: "2025-08-15", name: "Independence Day" },
+            { date: "2025-10-02", name: "Gandhi Jayanti" },
+            { date: "2025-12-25", name: "Christmas" }
+        ];
         
         // Auth tab switching
         loginTab.addEventListener('click', () => {
@@ -850,6 +972,7 @@
                         authSection.style.display = 'none';
                         dashboardSection.style.display = 'block';
                         loadAttendanceData();
+                        renderHolidayList();
                     }
                 })
                 .catch((error) => {
@@ -869,6 +992,12 @@
         checkinBtn.addEventListener('click', () => {
             const now = new Date();
             const dateKey = formatDate(now);
+            
+            // Check if today is a holiday
+            if (isHoliday(dateKey)) {
+                alert('Today is a holiday! You cannot check in on a holiday.');
+                return;
+            }
             
             // Check if already checked in today
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).get()
@@ -938,6 +1067,12 @@
             const now = new Date();
             const dateKey = formatDate(now);
             
+            // Check if today is a holiday
+            if (isHoliday(dateKey)) {
+                alert('Today is a holiday! You cannot mark absent on a holiday.');
+                return;
+            }
+            
             // Mark as absent
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
                 date: dateKey,
@@ -956,6 +1091,34 @@
                 alert('Error marking absent: ' + error.message);
             });
         });
+        
+        holidayBtn.addEventListener('click', () => {
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Mark as holiday
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
+                date: dateKey,
+                status: 'holiday',
+                userId: currentUser.uid,
+                username: userData.username,
+                officeStartTime: officeStartTime,
+                officeEndTime: officeEndTime,
+                dailyWorkingHours: dailyWorkingHours
+            }, { merge: true })
+            .then(() => {
+                loadAttendanceData();
+                alert('Marked as holiday for today');
+            })
+            .catch((error) => {
+                alert('Error marking holiday: ' + error.message);
+            });
+        });
+        
+        // Check if a date is a holiday
+        function isHoliday(dateString) {
+            return predefinedHolidays.some(holiday => holiday.date === dateString);
+        }
         
         // Calculate hours worked and overtime based on office timings
         function calculateHoursWorked() {
@@ -1008,12 +1171,14 @@
                     checkinBtn.disabled = true;
                     checkoutBtn.disabled = false;
                     absentBtn.disabled = true;
+                    holidayBtn.disabled = true;
                     checkinBtn.textContent = 'Checked In';
                     break;
                 case 'checkedOut':
                     checkinBtn.disabled = true;
                     checkoutBtn.disabled = true;
                     absentBtn.disabled = true;
+                    holidayBtn.disabled = true;
                     checkinBtn.textContent = 'Checked In';
                     checkoutBtn.textContent = 'Checked Out';
                     break;
@@ -1021,15 +1186,25 @@
                     checkinBtn.disabled = true;
                     checkoutBtn.disabled = true;
                     absentBtn.disabled = true;
+                    holidayBtn.disabled = true;
                     absentBtn.textContent = 'Absent';
+                    break;
+                case 'holiday':
+                    checkinBtn.disabled = true;
+                    checkoutBtn.disabled = true;
+                    absentBtn.disabled = true;
+                    holidayBtn.disabled = true;
+                    holidayBtn.textContent = 'Holiday';
                     break;
                 default:
                     checkinBtn.disabled = false;
                     checkoutBtn.disabled = true;
                     absentBtn.disabled = false;
+                    holidayBtn.disabled = false;
                     checkinBtn.textContent = 'Check In';
                     checkoutBtn.textContent = 'Check Out';
                     absentBtn.textContent = 'Mark Absent';
+                    holidayBtn.textContent = 'Mark Holiday';
             }
         }
         
@@ -1045,6 +1220,7 @@
                 .then((querySnapshot) => {
                     let presentCount = 0;
                     let absentCount = 0;
+                    let holidayCount = 0;
                     let totalHours = 0;
                     let totalOvertime = 0;
                     const historyItems = [];
@@ -1079,6 +1255,14 @@
                             if (data.date === todayKey) {
                                 updateButtonStates('absent');
                             }
+                        } else if (data.status === 'holiday') {
+                            holidayCount++;
+                            
+                            // Check if this is today's record
+                            const todayKey = formatDate(new Date());
+                            if (data.date === todayKey) {
+                                updateButtonStates('holiday');
+                            }
                         }
                         
                         // Add to history
@@ -1088,6 +1272,7 @@
                     // Update stats
                     presentDaysEl.textContent = presentCount;
                     absentDaysEl.textContent = absentCount;
+                    holidayDaysEl.textContent = holidayCount;
                     workingHoursEl.textContent = totalHours.toFixed(1);
                     overtimeHoursEl.textContent = totalOvertime.toFixed(1);
                     
@@ -1140,9 +1325,12 @@
                         statusText = 'Present (In Progress)';
                         statusClass = 'status-working';
                     }
-                } else {
+                } else if (item.status === 'absent') {
                     statusText = 'Absent';
                     statusClass = 'status-absent';
+                } else if (item.status === 'holiday') {
+                    statusText = 'Holiday';
+                    statusClass = 'status-holiday';
                 }
                 
                 historyItem.innerHTML = `
@@ -1157,6 +1345,31 @@
             if (recentItems.length === 0) {
                 historyEl.innerHTML = '<div class="history-item">No attendance records yet</div>';
             }
+        }
+        
+        // Render holiday list
+        function renderHolidayList() {
+            // Clear existing list
+            holidayListEl.innerHTML = '';
+            
+            // Add holidays to the list
+            predefinedHolidays.forEach(holiday => {
+                const holidayItem = document.createElement('div');
+                holidayItem.className = 'holiday-item';
+                
+                const date = new Date(holiday.date);
+                const formattedDate = date.toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'long'
+                });
+                
+                holidayItem.innerHTML = `
+                    <span>${formattedDate} - ${holiday.name}</span>
+                    <span class="status-holiday">Holiday</span>
+                `;
+                
+                holidayListEl.appendChild(holidayItem);
+            });
         }
         
         // Format date as YYYY-MM-DD
@@ -1205,6 +1418,7 @@
                 .then((querySnapshot) => {
                     let totalPresent = 0;
                     let totalAbsent = 0;
+                    let totalHolidays = 0;
                     let totalHours = 0;
                     let totalOvertime = 0;
                     const analyticsData = [];
@@ -1222,6 +1436,8 @@
                             }
                         } else if (data.status === 'absent') {
                             totalAbsent++;
+                        } else if (data.status === 'holiday') {
+                            totalHolidays++;
                         }
                         
                         analyticsData.push(data);
@@ -1230,6 +1446,7 @@
                     // Update analytics stats
                     totalPresentEl.textContent = totalPresent;
                     totalAbsentEl.textContent = totalAbsent;
+                    totalHolidaysEl.textContent = totalHolidays;
                     totalHoursEl.textContent = totalHours.toFixed(1);
                     totalOvertimeEl.textContent = totalOvertime.toFixed(1);
                     
@@ -1294,8 +1511,10 @@
                     if (item.overtime) {
                         overtime = item.overtime > 0 ? item.overtime + ' hrs' : '-';
                     }
-                } else {
+                } else if (item.status === 'absent') {
                     statusText = 'Absent';
+                } else if (item.status === 'holiday') {
+                    statusText = 'Holiday';
                 }
                 
                 row.innerHTML = `
