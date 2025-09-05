@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Attendance System</title>
+    <title>Employee Attendance System | Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -11,16 +11,37 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #fca311;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --background: #f8f9fc;
+            --card-bg: #ffffff;
+            --text-primary: #5a5c69;
+            --text-secondary: #858796;
+            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --gradient-success: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
+            --gradient-warning: linear-gradient(135deg, #fca311 0%, #ffba08 100%);
+            --gradient-danger: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+            --shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            --shadow-hover: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c 0%, #2b5876 100%);
-            color: #333;
+            background: var(--background);
+            color: var(--text-primary);
             min-height: 100vh;
             padding: 15px;
             display: flex;
@@ -31,49 +52,77 @@
         .container {
             width: 100%;
             max-width: 100%;
-            background: white;
+            background: var(--card-bg);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow);
             overflow: hidden;
             margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        
+        .container:hover {
+            box-shadow: var(--shadow-hover);
         }
         
         .header {
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            background: var(--gradient-primary);
             color: white;
-            padding: 20px 15px;
+            padding: 25px 20px;
             text-align: center;
             position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+            transform: rotate(30deg);
         }
         
         .header h1 {
-            font-size: 22px;
+            font-size: 24px;
             margin-bottom: 5px;
-            font-weight: 600;
+            font-weight: 700;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .header p {
             font-size: 14px;
             opacity: 0.9;
+            position: relative;
         }
         
         .profile {
             position: absolute;
             right: 15px;
             top: 15px;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid white;
-            font-size: 18px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .profile:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .content {
-            padding: 20px 15px;
+            padding: 25px 20px;
         }
         
         .auth-container {
@@ -82,29 +131,37 @@
         
         .auth-tabs {
             display: flex;
-            margin-bottom: 20px;
-            border-radius: 10px;
+            margin-bottom: 25px;
+            border-radius: 12px;
             overflow: hidden;
-            background: #f8f9fc;
+            background: #f0f2f5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         
         .auth-tab {
             flex: 1;
-            padding: 12px 10px;
+            padding: 14px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            position: relative;
         }
         
         .auth-tab.active {
-            background: #4e73df;
+            background: var(--primary);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+        }
+        
+        .auth-tab:not(.active):hover {
+            background: #e0e4eb;
         }
         
         .auth-form {
             display: none;
+            animation: fadeIn 0.5s ease;
         }
         
         .auth-form.active {
@@ -112,29 +169,37 @@
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
         }
         
         .form-group label {
             display: block;
             text-align: left;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 500;
-            color: #5a5c69;
+            color: var(--text-primary);
             font-size: 14px;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 14px 16px;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
         }
         
         .time-inputs {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
         }
         
@@ -144,150 +209,194 @@
         
         .time-inputs span {
             font-size: 14px;
-            color: #5a5c69;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
         
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
-            font-weight: bold;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
             font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn-primary {
-            background: #4e73df;
+            background: var(--primary);
             color: white;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
         }
         
         .btn-primary:hover {
-            background: #3a56c4;
+            background: #3551d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.25);
         }
         
         .attendance-card {
-            background: #f8f9fc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
             text-align: center;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .attendance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
         
         .attendance-card h2 {
-            color: #4e73df;
-            margin-bottom: 15px;
-            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 20px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
         .stats {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-around;
-            margin: 15px 0;
-            gap: 10px;
+            justify-content: space-between;
+            margin: 20px 0;
+            gap: 15px;
         }
         
         .stat {
             text-align: center;
-            min-width: 80px;
-            padding: 12px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            min-width: 90px;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
             flex: 1;
             margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4e73df;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
         }
         
         .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 5px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
         
         .action-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 25px;
         }
         
         .action-buttons .btn {
             flex: 1;
-            min-width: 120px;
+            min-width: 130px;
             margin-top: 0;
-            padding: 12px;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
         }
         
         .btn-present {
-            background: #1cc88a;
+            background: var(--success);
             color: white;
+            box-shadow: 0 4px 6px rgba(76, 201, 240, 0.2);
         }
         
         .btn-present:hover {
-            background: #17a673;
+            background: #3bb5d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(76, 201, 240, 0.25);
         }
         
         .btn-absent {
-            background: #e74a3b;
+            background: var(--danger);
             color: white;
+            box-shadow: 0 4px 6px rgba(247, 37, 133, 0.2);
         }
         
         .btn-absent:hover {
-            background: #c03526;
+            background: #e31279;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(247, 37, 133, 0.25);
         }
         
         .btn-clock {
-            background: #36b9cc;
+            background: var(--info);
             color: white;
+            box-shadow: 0 4px 6px rgba(72, 149, 239, 0.2);
         }
         
         .btn-clock:hover {
-            background: #2c9faf;
+            background: #3a87e3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(72, 149, 239, 0.25);
         }
         
         .btn-holiday {
-            background: #f6c23e;
+            background: var(--warning);
             color: white;
+            box-shadow: 0 4px 6px rgba(252, 163, 17, 0.2);
         }
         
         .btn-holiday:hover {
-            background: #dda20a;
+            background: #f0a000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(252, 163, 17, 0.25);
         }
         
         .timer {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4e73df;
-            margin: 15px 0;
-            padding: 12px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             font-family: monospace;
+            letter-spacing: 1px;
+            border: 1px solid rgba(67, 97, 238, 0.1);
         }
         
         .user-info {
             text-align: center;
-            padding: 15px;
-            background: #f8f9fc;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border-top: 3px solid var(--primary);
         }
         
         .dashboard-section {
             display: none;
+            animation: fadeIn 0.5s ease;
         }
         
         .dashboard-section.active {
@@ -295,30 +404,41 @@
         }
         
         .history {
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .history h3 {
-            color: #4e73df;
-            margin-bottom: 12px;
-            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .history-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 12px 15px;
             border-bottom: 1px solid #e3e6f0;
             font-size: 14px;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+        
+        .history-item:hover {
+            background: #f8f9fc;
+            transform: translateX(5px);
         }
         
         .history-date {
-            color: #5a5c69;
+            color: var(--text-primary);
+            font-weight: 500;
         }
         
         .history-status {
-            font-weight: bold;
+            font-weight: 600;
         }
         
         .status-present {
@@ -342,21 +462,23 @@
         }
         
         .footer {
-            padding: 15px;
+            padding: 20px;
             text-align: center;
             background: #f8f9fc;
-            color: #6c757d;
-            font-size: 12px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            border-top: 1px solid #e3e6f0;
         }
         
         .analytics-btn {
             text-align: center;
-            margin: 20px 0;
+            margin: 25px 0;
         }
         
         .analytics-section {
             display: none;
-            margin-top: 15px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
         }
         
         .analytics-section.active {
@@ -365,31 +487,40 @@
         
         .analytics-table-container {
             overflow-x: auto;
-            margin: 15px 0;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
         }
         
         .analytics-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             min-width: 600px;
         }
         
         .analytics-table th, .analytics-table td {
-            padding: 10px 12px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #e3e6f0;
             font-size: 14px;
         }
         
         .analytics-table th {
-            background: #4e73df;
+            background: var(--primary);
             color: white;
             font-weight: 600;
             white-space: nowrap;
+            position: sticky;
+            top: 0;
         }
         
         .analytics-table tr:nth-child(even) {
             background: #f8f9fc;
+        }
+        
+        .analytics-table tr:hover {
+            background: #f0f4ff;
         }
         
         .print-btn {
@@ -400,6 +531,7 @@
         
         .print-btn:hover {
             background: #4e5070;
+            transform: translateY(-2px);
         }
         
         .download-btn {
@@ -410,26 +542,27 @@
         
         .download-btn:hover {
             background: #17a673;
+            transform: translateY(-2px);
         }
         
         .overtime-badge {
             background: #fd7e14;
             color: #fff;
-            padding: 2px 6px;
-            border-radius: 12px;
+            padding: 3px 8px;
+            border-radius: 15px;
             font-size: 11px;
             font-weight: bold;
-            margin-left: 4px;
+            margin-left: 5px;
         }
         
         .holiday-badge {
             background: #f6c23e;
             color: #fff;
-            padding: 2px 6px;
-            border-radius: 12px;
+            padding: 3px 8px;
+            border-radius: 15px;
             font-size: 11px;
             font-weight: bold;
-            margin-left: 4px;
+            margin-left: 5px;
         }
         
         .report-header {
@@ -437,29 +570,217 @@
         }
         
         .holiday-section {
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .holiday-list {
-            margin-top: 10px;
-            max-height: 150px;
+            margin-top: 15px;
+            max-height: 180px;
             overflow-y: auto;
             border: 1px solid #e3e6f0;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 15px;
             background: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
         }
         
         .holiday-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #f0f0f0;
             font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .holiday-item:hover {
+            background: #fffdf5;
+            padding-left: 5px;
         }
         
         .holiday-item:last-child {
             border-bottom: none;
+        }
+        
+        .guide-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .guide-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .close-guide {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .guide-step {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .guide-step:last-child {
+            border-bottom: none;
+        }
+        
+        .guide-step h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .guide-step p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .guide-step img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .help-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid #1cc88a;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #e74a3b;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #36b9cc;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .stats {
+                gap: 10px;
+            }
+            
+            .stat {
+                min-width: 80px;
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 22px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .timer {
+                font-size: 24px;
+                padding: 12px;
+            }
+            
+            .attendance-card {
+                padding: 20px;
+            }
+            
+            .attendance-card h2 {
+                font-size: 18px;
+            }
+            
+            .guide-content {
+                padding: 20px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -472,9 +793,9 @@
             }
             
             .profile {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
             }
             
             .stat {
@@ -487,15 +808,7 @@
             }
             
             .stat-label {
-                font-size: 11px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .action-buttons .btn {
-                width: 100%;
+                font-size: 12px;
             }
             
             .timer {
@@ -504,34 +817,35 @@
             }
             
             .attendance-card h2 {
-                font-size: 16px;
+                font-size: 17px;
             }
             
             .history h3 {
-                font-size: 15px;
+                font-size: 16px;
             }
             
             .history-item {
                 font-size: 13px;
+                padding: 10px;
             }
             
             .btn {
-                padding: 12px;
+                padding: 14px;
                 font-size: 15px;
+            }
+            
+            .help-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 15px;
+                right: 15px;
             }
         }
         
-        @media (min-width: 768px) {
+        @media (min-width: 992px) {
             .container {
-                max-width: 700px;
-            }
-            
-            .content {
-                padding: 25px;
-            }
-            
-            .header {
-                padding: 25px;
+                max-width: 900px;
             }
         }
         
@@ -553,7 +867,7 @@
                 text-align: center;
                 margin-bottom: 20px;
                 padding-bottom: 15px;
-                border-bottom: 2px solid #4e73df;
+                border-bottom: 2px solid var(--primary);
             }
             .btn {
                 display: none;
@@ -564,9 +878,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Employee Attendance System</h1>
-            <p>Track your attendance and working hours</p>
-            <div class="profile">
+            <h1><i class="fas fa-fingerprint"></i> Employee Attendance System</h1>
+            <p>Track your attendance and working hours with premium features</p>
+            <div class="profile" id="profile-btn">
                 <i class="fas fa-user"></i>
             </div>
         </div>
@@ -575,45 +889,45 @@
             <!-- Authentication Section -->
             <div id="auth-section" class="auth-container">
                 <div class="auth-tabs">
-                    <div class="auth-tab active" id="login-tab">Login</div>
-                    <div class="auth-tab" id="signup-tab">Sign Up</div>
+                    <div class="auth-tab active" id="login-tab"><i class="fas fa-sign-in-alt"></i> Login</div>
+                    <div class="auth-tab" id="signup-tab"><i class="fas fa-user-plus"></i> Sign Up</div>
                 </div>
                 
                 <div id="login-form" class="auth-form active">
                     <div class="form-group">
-                        <label for="login-email">Email</label>
+                        <label for="login-email"><i class="fas fa-envelope"></i> Email</label>
                         <input type="email" id="login-email" placeholder="Enter your email">
                     </div>
                     <div class="form-group">
-                        <label for="login-password">Password</label>
+                        <label for="login-password"><i class="fas fa-lock"></i> Password</label>
                         <input type="password" id="login-password" placeholder="Enter your password">
                     </div>
-                    <button class="btn btn-primary" id="login-btn">Login</button>
+                    <button class="btn btn-primary" id="login-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
                 </div>
                 
                 <div id="signup-form" class="auth-form">
                     <div class="form-group">
-                        <label for="signup-name">Full Name</label>
+                        <label for="signup-name"><i class="fas fa-user"></i> Full Name</label>
                         <input type="text" id="signup-name" placeholder="Enter your full name">
                     </div>
                     <div class="form-group">
-                        <label for="signup-email">Email</label>
+                        <label for="signup-email"><i class="fas fa-envelope"></i> Email</label>
                         <input type="email" id="signup-email" placeholder="Enter your email">
                     </div>
                     <div class="form-group">
-                        <label for="signup-password">Password</label>
+                        <label for="signup-password"><i class="fas fa-lock"></i> Password</label>
                         <input type="password" id="signup-password" placeholder="Create a password">
                     </div>
                     <div class="form-group">
-                        <label for="signup-username">Username</label>
+                        <label for="signup-username"><i class="fas fa-at"></i> Username</label>
                         <input type="text" id="signup-username" placeholder="Choose a username">
                     </div>
                     <div class="form-group">
-                        <label for="signup-mobile">Mobile Number</label>
+                        <label for="signup-mobile"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
                         <input type="tel" id="signup-mobile" placeholder="Enter your mobile number" required>
                     </div>
                     <div class="form-group">
-                        <label>Office Timings</label>
+                        <label><i class="fas fa-clock"></i> Office Timings</label>
                         <div class="time-inputs">
                             <input type="time" id="signup-timein" value="09:00">
                             <span>to</span>
@@ -621,38 +935,38 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="signup-working-hours">Daily Working Hours</label>
+                        <label for="signup-working-hours"><i class="fas fa-business-time"></i> Daily Working Hours</label>
                         <input type="number" id="signup-working-hours" placeholder="Enter daily working hours" value="8" step="0.5" min="1" max="24">
                     </div>
-                    <button class="btn btn-primary" id="signup-btn">Sign Up</button>
+                    <button class="btn btn-primary" id="signup-btn"><i class="fas fa-user-plus"></i> Sign Up</button>
                 </div>
             </div>
             
             <!-- Dashboard Section -->
             <div id="dashboard-section" class="dashboard-section">
                 <div class="user-info">
-                    <h3 id="welcome-message">Welcome, User!</h3>
-                    <p id="user-office-hours">Office Hours: 9:00 AM to 6:00 PM</p>
-                    <button class="btn btn-primary" id="logout-btn">Logout</button>
+                    <h3 id="welcome-message"><i class="fas fa-smile"></i> Welcome, User!</h3>
+                    <p id="user-office-hours"><i class="fas fa-clock"></i> Office Hours: 9:00 AM to 6:00 PM</p>
+                    <button class="btn btn-primary" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
                 
                 <div class="attendance-card">
-                    <h2>Today's Attendance</h2>
+                    <h2><i class="fas fa-calendar-day"></i> Today's Attendance</h2>
                     
                     <div class="timer" id="timer">
                         00:00:00
                     </div>
                     
                     <div class="action-buttons">
-                        <button class="btn btn-present" id="checkin-btn">Check In</button>
-                        <button class="btn btn-absent" id="absent-btn">Mark Absent</button>
-                        <button class="btn btn-holiday" id="holiday-btn">Mark Holiday</button>
-                        <button class="btn btn-clock" id="checkout-btn">Check Out</button>
+                        <button class="btn btn-present" id="checkin-btn"><i class="fas fa-sign-in-alt"></i> Check In</button>
+                        <button class="btn btn-absent" id="absent-btn"><i class="fas fa-user-times"></i> Mark Absent</button>
+                        <button class="btn btn-holiday" id="holiday-btn"><i class="fas fa-umbrella-beach"></i> Mark Holiday</button>
+                        <button class="btn btn-clock" id="checkout-btn"><i class="fas fa-sign-out-alt"></i> Check Out</button>
                     </div>
                 </div>
                 
                 <div class="attendance-card">
-                    <h2>This Month's Statistics</h2>
+                    <h2><i class="fas fa-chart-pie"></i> This Month's Statistics</h2>
                     
                     <div class="stats">
                         <div class="stat">
@@ -679,7 +993,7 @@
                 </div>
                 
                 <div class="holiday-section">
-                    <h3>Upcoming Holidays</h3>
+                    <h3><i class="fas fa-calendar-alt"></i> Upcoming Holidays</h3>
                     <div class="holiday-list" id="holiday-list">
                         <div class="holiday-item">
                             <span>15 August - Independence Day</span>
@@ -697,11 +1011,11 @@
                 </div>
                 
                 <div class="analytics-btn">
-                    <button class="btn btn-primary" id="view-analytics-btn">View Attendance Analytics</button>
+                    <button class="btn btn-primary" id="view-analytics-btn"><i class="fas fa-chart-line"></i> View Attendance Analytics</button>
                 </div>
                 
                 <div class="history">
-                    <h3>Recent Attendance</h3>
+                    <h3><i class="fas fa-history"></i> Recent Attendance</h3>
                     <div id="attendance-history">
                         <!-- History items will be generated by JavaScript -->
                     </div>
@@ -716,7 +1030,7 @@
                     <p id="report-period">Period: January 2023</p>
                 </div>
                 
-                <h2>Attendance Analytics</h2>
+                <h2><i class="fas fa-chart-bar"></i> Attendance Analytics</h2>
                 
                 <div class="stats">
                     <div class="stat">
@@ -741,7 +1055,7 @@
                     </div>
                 </div>
                 
-                <h3>Attendance Details</h3>
+                <h3><i class="fas fa-table"></i> Attendance Details</h3>
                 <div class="analytics-table-container">
                     <table class="analytics-table">
                         <thead>
@@ -761,15 +1075,75 @@
                     </table>
                 </div>
                 
-                <button class="btn print-btn" id="print-analytics-btn">Print Report</button>
-                <button class="btn download-btn" id="download-pdf-btn">Download PDF</button>
-                <button class="btn btn-primary" id="back-to-dashboard-btn">Back to Dashboard</button>
+                <button class="btn print-btn" id="print-analytics-btn"><i class="fas fa-print"></i> Print Report</button>
+                <button class="btn download-btn" id="download-pdf-btn"><i class="fas fa-download"></i> Download PDF</button>
+                <button class="btn btn-primary" id="back-to-dashboard-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
             </div>
         </div>
         
         <div class="footer">
             <p>© 2023 Employee Attendance System | Premium Edition</p>
         </div>
+    </div>
+
+    <!-- Help Guide Modal -->
+    <div class="guide-modal" id="guide-modal">
+        <div class="guide-content">
+            <span class="close-guide" id="close-guide">&times;</span>
+            <h2><i class="fas fa-book-open"></i> Employee Attendance System Guide</h2>
+            
+            <div class="guide-step">
+                <h3><i class="fas fa-user-plus"></i> Step 1: Create an Account</h3>
+                <p>Click on the "Sign Up" tab and fill in all your details including:</p>
+                <p>- Your full name</p>
+                <p>- Email address</p>
+                <p>- Secure password</p>
+                <p>- Username</p>
+                <p>- Mobile number</p>
+                <p>- Set your office timings and daily working hours</p>
+            </div>
+            
+            <div class="guide-step">
+                <h3><i class="fas fa-sign-in-alt"></i> Step 2: Login</h3>
+                <p>After creating your account, use the "Login" tab to access the system with your email and password.</p>
+            </div>
+            
+            <div class="guide-step">
+                <h3><i class="fas fa-fingerprint"></i> Step 3: Mark Attendance</h3>
+                <p>On the dashboard, you can:</p>
+                <p>- Click "Check In" when you arrive at work</p>
+                <p>- Click "Check Out" when you leave</p>
+                <p>- Mark yourself as "Absent" if you're not working that day</p>
+                <p>- Mark "Holiday" if it's a company holiday</p>
+            </div>
+            
+            <div class="guide-step">
+                <h3><i class="fas fa-chart-line"></i> Step 4: View Analytics</h3>
+                <p>Click "View Attendance Analytics" to see detailed reports of your attendance, working hours, and overtime.</p>
+                <p>You can print or download these reports as PDF for your records.</p>
+            </div>
+            
+            <div class="guide-step">
+                <h3><i class="fas fa-cog"></i> Step 5: Profile Management</h3>
+                <p>Click on the profile icon in the top right to update your personal information and settings.</p>
+            </div>
+            
+            <div class="guide-step">
+                <h3><i class="fas fa-question-circle"></i> Need More Help?</h3>
+                <p>If you encounter any issues or have questions, please contact your system administrator.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Button -->
+    <div class="help-btn" id="help-btn">
+        <i class="fas fa-question"></i>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">Operation completed successfully</span>
     </div>
 
     <script>
@@ -796,6 +1170,11 @@
         const authSection = document.getElementById('auth-section');
         const dashboardSection = document.getElementById('dashboard-section');
         const analyticsSection = document.getElementById('analytics-section');
+        const helpBtn = document.getElementById('help-btn');
+        const guideModal = document.getElementById('guide-modal');
+        const closeGuide = document.getElementById('close-guide');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
         
         const loginEmail = document.getElementById('login-email');
         const loginPassword = document.getElementById('login-password');
@@ -882,17 +1261,18 @@
             const password = loginPassword.value;
             
             if (!email || !password) {
-                alert('Please enter both email and password');
+                showNotification('Please enter both email and password', 'error');
                 return;
             }
             
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     currentUser = userCredential.user;
+                    showNotification('Login successful!', 'success');
                     loadUserData();
                 })
                 .catch((error) => {
-                    alert('Login error: ' + error.message);
+                    showNotification('Login error: ' + error.message, 'error');
                 });
         });
         
@@ -907,22 +1287,22 @@
             const workingHours = parseFloat(signupWorkingHours.value);
             
             if (!name || !email || !password || !username || !mobile) {
-                alert('Please fill all required fields');
+                showNotification('Please fill all required fields', 'error');
                 return;
             }
             
             if (!mobile.match(/^[0-9]{10}$/)) {
-                alert('Please enter a valid 10-digit mobile number');
+                showNotification('Please enter a valid 10-digit mobile number', 'error');
                 return;
             }
             
             if (!timeIn || !timeOut) {
-                alert('Please set office timings');
+                showNotification('Please set office timings', 'error');
                 return;
             }
             
             if (!workingHours || workingHours <= 0 || workingHours > 24) {
-                alert('Please enter valid daily working hours (1-24)');
+                showNotification('Please enter valid daily working hours (1-24)', 'error');
                 return;
             }
             
@@ -943,10 +1323,11 @@
                     });
                 })
                 .then(() => {
+                    showNotification('Account created successfully!', 'success');
                     loadUserData();
                 })
                 .catch((error) => {
-                    alert('Signup error: ' + error.message);
+                    showNotification('Signup error: ' + error.message, 'error');
                 });
         });
         
@@ -958,9 +1339,10 @@
                     authSection.style.display = 'block';
                     dashboardSection.style.display = 'none';
                     stopTimer();
+                    showNotification('You have been logged out successfully', 'info');
                 })
                 .catch((error) => {
-                    alert('Logout error: ' + error.message);
+                    showNotification('Logout error: ' + error.message, 'error');
                 });
         });
         
@@ -970,13 +1352,13 @@
                 .then((doc) => {
                     if (doc.exists) {
                         userData = doc.data();
-                        welcomeMessage.textContent = `Welcome, ${userData.name}!`;
+                        welcomeMessage.innerHTML = `<i class="fas fa-smile"></i> Welcome, ${userData.name}!`;
                         
                         // Set office timings from user data
                         if (userData.officeTimeIn && userData.officeTimeOut) {
                             officeStartTime = userData.officeTimeIn;
                             officeEndTime = userData.officeTimeOut;
-                            userOfficeHours.textContent = `Office Hours: ${formatTimeForDisplay(officeStartTime)} to ${formatTimeForDisplay(officeEndTime)}`;
+                            userOfficeHours.innerHTML = `<i class="fas fa-clock"></i> Office Hours: ${formatTimeForDisplay(officeStartTime)} to ${formatTimeForDisplay(officeEndTime)}`;
                         }
                         
                         if (userData.dailyWorkingHours) {
@@ -990,7 +1372,7 @@
                     }
                 })
                 .catch((error) => {
-                    alert('Error loading user data: ' + error.message);
+                    showNotification('Error loading user data: ' + error.message, 'error');
                 });
         }
         
@@ -1009,7 +1391,7 @@
             
             // Check if today is a holiday
             if (isHoliday(dateKey)) {
-                alert('Today is a holiday! You cannot check in on a holiday.');
+                showNotification('Today is a holiday! You cannot check in on a holiday.', 'error');
                 return;
             }
             
@@ -1017,7 +1399,7 @@
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).get()
                 .then((doc) => {
                     if (doc.exists && doc.data().checkIn) {
-                        alert('You have already checked in today');
+                        showNotification('You have already checked in today', 'error');
                         return;
                     }
                     
@@ -1039,16 +1421,16 @@
                     startTimer();
                     updateButtonStates('checkedIn');
                     loadAttendanceData();
-                    alert('Checked in successfully at ' + now.toLocaleTimeString());
+                    showNotification('Checked in successfully at ' + now.toLocaleTimeString(), 'success');
                 })
                 .catch((error) => {
-                    alert('Check-in error: ' + error.message);
+                    showNotification('Check-in error: ' + error.message, 'error');
                 });
         });
         
         checkoutBtn.addEventListener('click', () => {
             if (!isClockedIn) {
-                alert('You are not checked in');
+                showNotification('You are not checked in', 'error');
                 return;
             }
             
@@ -1069,11 +1451,11 @@
                 isClockedIn = false;
                 updateButtonStates('checkedOut');
                 loadAttendanceData();
-                alert('Checked out successfully. Worked: ' + formatHoursToHhMm(hoursWorked) + 
-                      (overtime > 0 ? ' (Overtime: ' + formatHoursToHhMm(overtime) + ')' : ''));
+                showNotification('Checked out successfully. Worked: ' + formatHoursToHhMm(hoursWorked) + 
+                      (overtime > 0 ? ' (Overtime: ' + formatHoursToHhMm(overtime) + ')' : ''), 'success');
             })
             .catch((error) => {
-                alert('Check-out error: ' + error.message);
+                showNotification('Check-out error: ' + error.message, 'error');
             });
         });
         
@@ -1083,7 +1465,7 @@
             
             // Check if today is a holiday
             if (isHoliday(dateKey)) {
-                alert('Today is a holiday! You cannot mark absent on a holiday.');
+                showNotification('Today is a holiday! You cannot mark absent on a holiday.', 'error');
                 return;
             }
             
@@ -1099,10 +1481,10 @@
             }, { merge: true })
             .then(() => {
                 loadAttendanceData();
-                alert('Marked as absent for today');
+                showNotification('Marked as absent for today', 'info');
             })
             .catch((error) => {
-                alert('Error marking absent: ' + error.message);
+                showNotification('Error marking absent: ' + error.message, 'error');
             });
         });
         
@@ -1122,10 +1504,10 @@
             }, { merge: true })
             .then(() => {
                 loadAttendanceData();
-                alert('Marked as holiday for today');
+                showNotification('Marked as holiday for today', 'info');
             })
             .catch((error) => {
-                alert('Error marking holiday: ' + error.message);
+                showNotification('Error marking holiday: ' + error.message, 'error');
             });
         });
         
@@ -1246,10 +1628,12 @@
             
             let statusText = '';
             let statusClass = '';
+            let icon = '';
             
             if (record.status === 'present') {
                 statusText = 'Present';
                 statusClass = 'status-present';
+                icon = '<i class="fas fa-sign-in-alt"></i>';
                 
                 if (record.checkIn) {
                     const checkInTime = new Date(record.checkIn);
@@ -1273,14 +1657,16 @@
             } else if (record.status === 'absent') {
                 statusText = 'Absent';
                 statusClass = 'status-absent';
+                icon = '<i class="fas fa-user-times"></i>';
             } else if (record.status === 'holiday') {
                 statusText = 'Holiday';
                 statusClass = 'status-holiday';
+                icon = '<i class="fas fa-umbrella-beach"></i>';
             }
             
             historyItem.innerHTML = `
                 <span class="history-date">${formattedDate}</span>
-                <span class="history-status ${statusClass}">${statusText}</span>
+                <span class="history-status ${statusClass}">${icon} ${statusText}</span>
             `;
             
             historyEl.appendChild(historyItem);
@@ -1607,6 +1993,7 @@
             
             // Save the PDF
             doc.save(`attendance_report_${currentYear}_${currentMonth+1}_${userData.username}.pdf`);
+            showNotification('PDF downloaded successfully!', 'success');
         }
         
         // Utility functions
@@ -1657,6 +2044,36 @@
                 overtime: overtime
             };
         }
+        
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notification.className = 'notification ' + type;
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Help Guide
+        helpBtn.addEventListener('click', () => {
+            guideModal.style.display = 'flex';
+        });
+        
+        closeGuide.addEventListener('click', () => {
+            guideModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === guideModal) {
+                guideModal.style.display = 'none';
+            }
+        });
         
         // Initialize button states
         updateButtonStates();
