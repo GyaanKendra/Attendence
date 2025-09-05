@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Attendance System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #2b5876 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .profile {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-size: 18px;
+        }
+        
+        .content {
+            padding: 20px 15px;
+        }
+        
+        .auth-container {
+            text-align: center;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fc;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .auth-tab.active {
+            background: #4e73df;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            text-align: left;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #5a5c69;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .time-inputs input {
+            flex: 1;
+        }
+        
+        .time-inputs span {
+            font-size: 14px;
+            color: #5a5c69;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: #4e73df;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a56c4;
+        }
+        
+        .attendance-card {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .attendance-card h2 {
+            color: #4e73df;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 15px 0;
+            gap: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+            min-width: 80px;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            margin: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4e73df;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+            margin-top: 0;
+            padding: 12px;
+        }
+        
+        .btn-present {
+            background: #1cc88a;
+            color: white;
+        }
+        
+        .btn-present:hover {
+            background: #17a673;
+        }
+        
+        .btn-absent {
+            background: #e74a3b;
+            color: white;
+        }
+        
+        .btn-absent:hover {
+            background: #c03526;
+        }
+        
+        .btn-clock {
+            background: #36b9cc;
+            color: white;
+        }
+        
+        .btn-clock:hover {
+            background: #2c9faf;
+        }
+        
+        .btn-holiday {
+            background: #f6c23e;
+            color: white;
+        }
+        
+        .btn-holiday:hover {
+            background: #dda20a;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4e73df;
+            margin: 15px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            font-family: monospace;
+        }
+        
+        .user-info {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        .history {
+            margin-top: 20px;
+        }
+        
+        .history h3 {
+            color: #4e73df;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e3e6f0;
+            font-size: 14px;
+        }
+        
+        .history-date {
+            color: #5a5c69;
+        }
+        
+        .history-status {
+            font-weight: bold;
+        }
+        
+        .status-present {
+            color: #1cc88a;
+        }
+        
+        .status-absent {
+            color: #e74a3b;
+        }
+        
+        .status-working {
+            color: #36b9cc;
+        }
+        
+        .status-holiday {
+            color: #f6c23e;
+        }
+        
+        .status-overtime {
+            color: #fd7e14;
+        }
+        
+        .footer {
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fc;
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .analytics-btn {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .analytics-section {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .analytics-section.active {
+            display: block;
+        }
+        
+        .analytics-table-container {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        .analytics-table th, .analytics-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e3e6f0;
+            font-size: 14px;
+        }
+        
+        .analytics-table th {
+            background: #4e73df;
+            color: white;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .analytics-table tr:nth-child(even) {
+            background: #f8f9fc;
+        }
+        
+        .print-btn {
+            background: #5a5c69;
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .print-btn:hover {
+            background: #4e5070;
+        }
+        
+        .download-btn {
+            background: #1cc88a;
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .download-btn:hover {
+            background: #17a673;
+        }
+        
+        .overtime-badge {
+            background: #fd7e14;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        .holiday-badge {
+            background: #f6c23e;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        .report-header {
+            display: none;
+        }
+        
+        .holiday-section {
+            margin-top: 20px;
+        }
+        
+        .holiday-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e3e6f0;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+        }
+        
+        .holiday-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        
+        .holiday-item:last-child {
+            border-bottom: none;
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .header p {
+                font-size: 13px;
+            }
+            
+            .profile {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .stat {
+                min-width: 70px;
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .timer {
+                font-size: 22px;
+                padding: 10px;
+            }
+            
+            .attendance-card h2 {
+                font-size: 16px;
+            }
+            
+            .history h3 {
+                font-size: 15px;
+            }
+            
+            .history-item {
+                font-size: 13px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .header {
+                padding: 25px;
+            }
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .analytics-section, .analytics-section * {
+                visibility: visible;
+            }
+            .analytics-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .report-header {
+                display: block;
+                text-align: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #4e73df;
+            }
+            .btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Attendance System</h1>
+            <p>Track your attendance and working hours</p>
+            <div class="profile">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Authentication Section -->
+            <div id="auth-section" class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="login-tab">Login</div>
+                    <div class="auth-tab" id="signup-tab">Sign Up</div>
+                </div>
+                
+                <div id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                    </div>
+                    <button class="btn btn-primary" id="login-btn">Login</button>
+                </div>
+                
+                <div id="signup-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-mobile">Mobile Number</label>
+                        <input type="tel" id="signup-mobile" placeholder="Enter your mobile number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Office Timings</label>
+                        <div class="time-inputs">
+                            <input type="time" id="signup-timein" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="signup-timeout" value="18:00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-working-hours">Daily Working Hours</label>
+                        <input type="number" id="signup-working-hours" placeholder="Enter daily working hours" value="8" step="0.5" min="1" max="24">
+                    </div>
+                    <button class="btn btn-primary" id="signup-btn">Sign Up</button>
+                </div>
+            </div>
+            
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="dashboard-section">
+                <div class="user-info">
+                    <h3 id="welcome-message">Welcome, User!</h3>
+                    <p id="user-office-hours">Office Hours: 9:00 AM to 6:00 PM</p>
+                    <button class="btn btn-primary" id="logout-btn">Logout</button>
+                </div>
+                
+                <div class="attendance-card">
+                    <h2>Today's Attendance</h2>
+                    
+                    <div class="timer" id="timer">
+                        00:00:00
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-present" id="checkin-btn">Check In</button>
+                        <button class="btn btn-absent" id="absent-btn">Mark Absent</button>
+                        <button class="btn btn-holiday" id="holiday-btn">Mark Holiday</button>
+                        <button class="btn btn-clock" id="checkout-btn">Check Out</button>
+                    </div>
+                </div>
+                
+                <div class="attendance-card">
+                    <h2>This Month's Statistics</h2>
+                    
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="present-days">0</div>
+                            <div class="stat-label">Present</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="absent-days">0</div>
+                            <div class="stat-label">Absent</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="holiday-days">0</div>
+                            <div class="stat-label">Holidays</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="working-hours">0h 0m</div>
+                            <div class="stat-label">Hours</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="overtime-hours">0h 0m</div>
+                            <div class="stat-label">Overtime</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="holiday-section">
+                    <h3>Upcoming Holidays</h3>
+                    <div class="holiday-list" id="holiday-list">
+                        <div class="holiday-item">
+                            <span>15 August - Independence Day</span>
+                            <span class="status-holiday">Holiday</span>
+                        </div>
+                        <div class="holiday-item">
+                            <span>2 October - Gandhi Jayanti</span>
+                            <span class="status-holiday">Holiday</span>
+                        </div>
+                        <div class="holiday-item">
+                            <span>25 December - Christmas</span>
+                            <span class="status-holiday">Holiday</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-btn">
+                    <button class="btn btn-primary" id="view-analytics-btn">View Attendance Analytics</button>
+                </div>
+                
+                <div class="history">
+                    <h3>Recent Attendance</h3>
+                    <div id="attendance-history">
+                        <!-- History items will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="analytics-section">
+                <div class="report-header">
+                    <h2>Employee Attendance Report</h2>
+                    <p id="report-employee-name">Employee: John Doe</p>
+                    <p id="report-period">Period: January 2023</p>
+                </div>
+                
+                <h2>Attendance Analytics</h2>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="total-present">0</div>
+                        <div class="stat-label">Total Present</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-absent">0</div>
+                        <div class="stat-label">Total Absent</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-holidays">0</div>
+                        <div class="stat-label">Total Holidays</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-hours">0h 0m</div>
+                        <div class="stat-label">Total Hours</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-overtime">0h 0m</div>
+                        <div class="stat-label">Overtime Hours</div>
+                    </div>
+                </div>
+                
+                <h3>Attendance Details</h3>
+                <div class="analytics-table-container">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Hours</th>
+                                <th>Overtime</th>
+                                <th>Late By</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-table-body">
+                            <!-- Analytics data will be generated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="btn print-btn" id="print-analytics-btn">Print Report</button>
+                <button class="btn download-btn" id="download-pdf-btn">Download PDF</button>
+                <button class="btn btn-primary" id="back-to-dashboard-btn">Back to Dashboard</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Employee Attendance System | Premium Edition</p>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAP813YmAk1uaNOfmBSMTcLQMpd09TmxEk",
+            authDomain: "employee-attendance-7bf05.firebaseapp.com",
+            projectId: "employee-attendance-7bf05",
+            storageBucket: "employee-attendance-7bf05.firebasestorage.app",
+            messagingSenderId: "448654487783",
+            appId: "1:448654487783:web:5be903e8130b472a1f3242"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // DOM Elements
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authSection = document.getElementById('auth-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const analyticsSection = document.getElementById('analytics-section');
+        
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginBtn = document.getElementById('login-btn');
+        const signupName = document.getElementById('signup-name');
+        const signupEmail = document.getElementById('signup-email');
+        const signupPassword = document.getElementById('signup-password');
+        const signupUsername = document.getElementById('signup-username');
+        const signupMobile = document.getElementById('signup-mobile');
+        const signupTimeIn = document.getElementById('signup-timein');
+        const signupTimeOut = document.getElementById('signup-timeout');
+        const signupWorkingHours = document.getElementById('signup-working-hours');
+        const signupBtn = document.getElementById('signup-btn');
+        
+        const welcomeMessage = document.getElementById('welcome-message');
+        const userOfficeHours = document.getElementById('user-office-hours');
+        const logoutBtn = document.getElementById('logout-btn');
+        const timerEl = document.getElementById('timer');
+        const checkinBtn = document.getElementById('checkin-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const absentBtn = document.getElementById('absent-btn');
+        const holidayBtn = document.getElementById('holiday-btn');
+        const presentDaysEl = document.getElementById('present-days');
+        const absentDaysEl = document.getElementById('absent-days');
+        const holidayDaysEl = document.getElementById('holiday-days');
+        const workingHoursEl = document.getElementById('working-hours');
+        const overtimeHoursEl = document.getElementById('overtime-hours');
+        const historyEl = document.getElementById('attendance-history');
+        const holidayListEl = document.getElementById('holiday-list');
+        const viewAnalyticsBtn = document.getElementById('view-analytics-btn');
+        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        const printAnalyticsBtn = document.getElementById('print-analytics-btn');
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        const totalPresentEl = document.getElementById('total-present');
+        const totalAbsentEl = document.getElementById('total-absent');
+        const totalHolidaysEl = document.getElementById('total-holidays');
+        const totalHoursEl = document.getElementById('total-hours');
+        const totalOvertimeEl = document.getElementById('total-overtime');
+        const analyticsTableBody = document.getElementById('analytics-table-body');
+        const reportEmployeeName = document.getElementById('report-employee-name');
+        const reportPeriod = document.getElementById('report-period');
+        
+        // Variables
+        let currentUser = null;
+        let userData = null;
+        let timerInterval = null;
+        let secondsWorked = 0;
+        let isClockedIn = false;
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        let officeStartTime = "09:00";
+        let officeEndTime = "18:00";
+        let dailyWorkingHours = 8;
+        
+        // Predefined holidays (can be extended)
+        const predefinedHolidays = [
+            { date: "2025-01-26", name: "Republic Day" },
+            { date: "2025-03-29", name: "Holi" },
+            { date: "2025-04-14", name: "Ambedkar Jayanti" },
+            { date: "2025-08-15", name: "Independence Day" },
+            { date: "2025-10-02", name: "Gandhi Jayanti" },
+            { date: "2025-12-25", name: "Christmas" }
+        ];
+        
+        // Auth tab switching
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+        });
+        
+        signupTab.addEventListener('click', () => {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            signupForm.classList.add('active');
+            loginForm.classList.remove('active');
+        });
+        
+        // Authentication functions
+        loginBtn.addEventListener('click', () => {
+            const email = loginEmail.value;
+            const password = loginPassword.value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    currentUser = userCredential.user;
+                    loadUserData();
+                })
+                .catch((error) => {
+                    alert('Login error: ' + error.message);
+                });
+        });
+        
+        signupBtn.addEventListener('click', () => {
+            const name = signupName.value;
+            const email = signupEmail.value;
+            const password = signupPassword.value;
+            const username = signupUsername.value;
+            const mobile = signupMobile.value;
+            const timeIn = signupTimeIn.value;
+            const timeOut = signupTimeOut.value;
+            const workingHours = parseFloat(signupWorkingHours.value);
+            
+            if (!name || !email || !password || !username || !mobile) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            if (!mobile.match(/^[0-9]{10}$/)) {
+                alert('Please enter a valid 10-digit mobile number');
+                return;
+            }
+            
+            if (!timeIn || !timeOut) {
+                alert('Please set office timings');
+                return;
+            }
+            
+            if (!workingHours || workingHours <= 0 || workingHours > 24) {
+                alert('Please enter valid daily working hours (1-24)');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    currentUser = userCredential.user;
+                    
+                    // Save user data to Firestore
+                    return db.collection('users').doc(currentUser.uid).set({
+                        name: name,
+                        email: email,
+                        username: username,
+                        mobile: mobile,
+                        officeTimeIn: timeIn,
+                        officeTimeOut: timeOut,
+                        dailyWorkingHours: workingHours,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    loadUserData();
+                })
+                .catch((error) => {
+                    alert('Signup error: ' + error.message);
+                });
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    currentUser = null;
+                    userData = null;
+                    authSection.style.display = 'block';
+                    dashboardSection.style.display = 'none';
+                    stopTimer();
+                })
+                .catch((error) => {
+                    alert('Logout error: ' + error.message);
+                });
+        });
+        
+        // Load user data from Firestore
+        function loadUserData() {
+            db.collection('users').doc(currentUser.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        userData = doc.data();
+                        welcomeMessage.textContent = `Welcome, ${userData.name}!`;
+                        
+                        // Set office timings from user data
+                        if (userData.officeTimeIn && userData.officeTimeOut) {
+                            officeStartTime = userData.officeTimeIn;
+                            officeEndTime = userData.officeTimeOut;
+                            userOfficeHours.textContent = `Office Hours: ${formatTimeForDisplay(officeStartTime)} to ${formatTimeForDisplay(officeEndTime)}`;
+                        }
+                        
+                        if (userData.dailyWorkingHours) {
+                            dailyWorkingHours = userData.dailyWorkingHours;
+                        }
+                        
+                        authSection.style.display = 'none';
+                        dashboardSection.style.display = 'block';
+                        loadAttendanceData();
+                        renderHolidayList();
+                    }
+                })
+                .catch((error) => {
+                    alert('Error loading user data: ' + error.message);
+                });
+        }
+        
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData();
+            }
+        });
+        
+        // Attendance functions
+        checkinBtn.addEventListener('click', () => {
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Check if today is a holiday
+            if (isHoliday(dateKey)) {
+                alert('Today is a holiday! You cannot check in on a holiday.');
+                return;
+            }
+            
+            // Check if already checked in today
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).get()
+                .then((doc) => {
+                    if (doc.exists && doc.data().checkIn) {
+                        alert('You have already checked in today');
+                        return;
+                    }
+                    
+                    // Save check-in time
+                    return db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
+                        date: dateKey,
+                        checkIn: now.toISOString(),
+                        status: 'present',
+                        userId: currentUser.uid,
+                        username: userData.username,
+                        officeStartTime: officeStartTime,
+                        officeEndTime: officeEndTime,
+                        dailyWorkingHours: dailyWorkingHours
+                    }, { merge: true });
+                })
+                .then(() => {
+                    isClockedIn = true;
+                    secondsWorked = 0;
+                    startTimer();
+                    updateButtonStates('checkedIn');
+                    loadAttendanceData();
+                    alert('Checked in successfully at ' + now.toLocaleTimeString());
+                })
+                .catch((error) => {
+                    alert('Check-in error: ' + error.message);
+                });
+        });
+        
+        checkoutBtn.addEventListener('click', () => {
+            if (!isClockedIn) {
+                alert('You are not checked in');
+                return;
+            }
+            
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Calculate hours worked and overtime
+            const { hoursWorked, overtime } = calculateHoursWorked();
+            
+            // Save check-out time and hours worked
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).update({
+                checkOut: now.toISOString(),
+                hoursWorked: hoursWorked,
+                overtime: overtime
+            })
+            .then(() => {
+                stopTimer();
+                isClockedIn = false;
+                updateButtonStates('checkedOut');
+                loadAttendanceData();
+                alert('Checked out successfully. Worked: ' + formatHoursToHhMm(hoursWorked) + 
+                      (overtime > 0 ? ' (Overtime: ' + formatHoursToHhMm(overtime) + ')' : ''));
+            })
+            .catch((error) => {
+                alert('Check-out error: ' + error.message);
+            });
+        });
+        
+        absentBtn.addEventListener('click', () => {
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Check if today is a holiday
+            if (isHoliday(dateKey)) {
+                alert('Today is a holiday! You cannot mark absent on a holiday.');
+                return;
+            }
+            
+            // Mark as absent
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
+                date: dateKey,
+                status: 'absent',
+                userId: currentUser.uid,
+                username: userData.username,
+                officeStartTime: officeStartTime,
+                officeEndTime: officeEndTime,
+                dailyWorkingHours: dailyWorkingHours
+            }, { merge: true })
+            .then(() => {
+                loadAttendanceData();
+                alert('Marked as absent for today');
+            })
+            .catch((error) => {
+                alert('Error marking absent: ' + error.message);
+            });
+        });
+        
+        holidayBtn.addEventListener('click', () => {
+            const now = new Date();
+            const dateKey = formatDate(now);
+            
+            // Mark as holiday
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
+                date: dateKey,
+                status: 'holiday',
+                userId: currentUser.uid,
+                username: userData.username,
+                officeStartTime: officeStartTime,
+                officeEndTime: officeEndTime,
+                dailyWorkingHours: dailyWorkingHours
+            }, { merge: true })
+            .then(() => {
+                loadAttendanceData();
+                alert('Marked as holiday for today');
+            })
+            .catch((error) => {
+                alert('Error marking holiday: ' + error.message);
+            });
+        });
+        
+        // Timer functions
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                secondsWorked++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+        
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function updateTimerDisplay() {
+            const hours = Math.floor(secondsWorked / 3600);
+            const minutes = Math.floor((secondsWorked % 3600) / 60);
+            const seconds = secondsWorked % 60;
+            
+            timerEl.textContent = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+        }
+        
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+        
+        // Load attendance data for the current month
+        function loadAttendanceData() {
+            if (!currentUser) return;
+            
+            const startDate = new Date(currentYear, currentMonth, 1);
+            const endDate = new Date(currentYear, currentMonth + 1, 0);
+            
+            let presentDays = 0;
+            let absentDays = 0;
+            let holidayDays = 0;
+            let totalHours = 0;
+            let totalOvertime = 0;
+            
+            // Clear history
+            historyEl.innerHTML = '';
+            
+            // Get all attendance records for the month
+            db.collection('attendance').doc(currentUser.uid).collection('records')
+                .where('date', '>=', formatDate(startDate))
+                .where('date', '<=', formatDate(endDate))
+                .orderBy('date', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        const record = doc.data();
+                        
+                        // Count statuses
+                        if (record.status === 'present') {
+                            presentDays++;
+                            
+                            // Add hours if available
+                            if (record.hoursWorked) {
+                                totalHours += record.hoursWorked;
+                            }
+                            
+                            // Add overtime if available
+                            if (record.overtime) {
+                                totalOvertime += record.overtime;
+                            }
+                            
+                            // Check if today's record and user is still clocked in
+                            if (record.date === formatDate(new Date()) && record.checkIn && !record.checkOut) {
+                                isClockedIn = true;
+                                
+                                // Calculate seconds worked from check-in time
+                                const checkInTime = new Date(record.checkIn);
+                                const now = new Date();
+                                secondsWorked = Math.floor((now - checkInTime) / 1000);
+                                
+                                startTimer();
+                                updateButtonStates('checkedIn');
+                            }
+                        } else if (record.status === 'absent') {
+                            absentDays++;
+                        } else if (record.status === 'holiday') {
+                            holidayDays++;
+                        }
+                        
+                        // Add to history
+                        addHistoryItem(record);
+                    });
+                    
+                    // Update stats
+                    presentDaysEl.textContent = presentDays;
+                    absentDaysEl.textContent = absentDays;
+                    holidayDaysEl.textContent = holidayDays;
+                    workingHoursEl.textContent = formatHoursToHhMm(totalHours);
+                    overtimeHoursEl.textContent = formatHoursToHhMm(totalOvertime);
+                })
+                .catch((error) => {
+                    console.error('Error loading attendance data:', error);
+                });
+        }
+        
+        // Add history item to the list
+        function addHistoryItem(record) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            
+            const date = new Date(record.date);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            if (record.status === 'present') {
+                statusText = 'Present';
+                statusClass = 'status-present';
+                
+                if (record.checkIn) {
+                    const checkInTime = new Date(record.checkIn);
+                    statusText += ` (${formatTimeForDisplay(checkInTime.toTimeString().substring(0, 5))}`;
+                    
+                    if (record.checkOut) {
+                        const checkOutTime = new Date(record.checkOut);
+                        statusText += ` - ${formatTimeForDisplay(checkOutTime.toTimeString().substring(0, 5))})`;
+                        
+                        if (record.hoursWorked) {
+                            statusText += ` - ${formatHoursToHhMm(record.hoursWorked)}`;
+                            
+                            if (record.overtime > 0) {
+                                statusText += `<span class="overtime-badge">+${formatHoursToHhMm(record.overtime)} OT</span>`;
+                            }
+                        }
+                    } else {
+                        statusText += ')';
+                    }
+                }
+            } else if (record.status === 'absent') {
+                statusText = 'Absent';
+                statusClass = 'status-absent';
+            } else if (record.status === 'holiday') {
+                statusText = 'Holiday';
+                statusClass = 'status-holiday';
+            }
+            
+            historyItem.innerHTML = `
+                <span class="history-date">${formattedDate}</span>
+                <span class="history-status ${statusClass}">${statusText}</span>
+            `;
+            
+            historyEl.appendChild(historyItem);
+        }
+        
+        // Update button states based on current status
+        function updateButtonStates(status) {
+            if (status === 'checkedIn') {
+                checkinBtn.disabled = true;
+                checkoutBtn.disabled = false;
+                absentBtn.disabled = true;
+                holidayBtn.disabled = true;
+            } else if (status === 'checkedOut') {
+                checkinBtn.disabled = true;
+                checkoutBtn.disabled = true;
+                absentBtn.disabled = true;
+                holidayBtn.disabled = true;
+            } else {
+                // Check if today is already marked
+                const todayKey = formatDate(new Date());
+                
+                db.collection('attendance').doc(currentUser.uid).collection('records').doc(todayKey).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const record = doc.data();
+                            
+                            if (record.status === 'present') {
+                                if (record.checkOut) {
+                                    // Already checked out
+                                    checkinBtn.disabled = true;
+                                    checkoutBtn.disabled = true;
+                                    absentBtn.disabled = true;
+                                    holidayBtn.disabled = true;
+                                } else {
+                                    // Checked in but not out
+                                    checkinBtn.disabled = true;
+                                    checkoutBtn.disabled = false;
+                                    absentBtn.disabled = true;
+                                    holidayBtn.disabled = true;
+                                    
+                                    // Start timer
+                                    isClockedIn = true;
+                                    if (record.checkIn) {
+                                        const checkInTime = new Date(record.checkIn);
+                                        const now = new Date();
+                                        secondsWorked = Math.floor((now - checkInTime) / 1000);
+                                        startTimer();
+                                    }
+                                }
+                            } else if (record.status === 'absent') {
+                                checkinBtn.disabled = true;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = true;
+                                holidayBtn.disabled = true;
+                            } else if (record.status === 'holiday') {
+                                checkinBtn.disabled = true;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = true;
+                                holidayBtn.disabled = true;
+                            }
+                        } else {
+                            // No record for today, check if it's a holiday
+                            if (isHoliday(todayKey)) {
+                                checkinBtn.disabled = true;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = true;
+                                holidayBtn.disabled = true;
+                            } else {
+                                // Enable all buttons
+                                checkinBtn.disabled = false;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = false;
+                                holidayBtn.disabled = false;
+                            }
+                        }
+                    });
+            }
+        }
+        
+        // Check if a date is a holiday
+        function isHoliday(dateString) {
+            return predefinedHolidays.some(holiday => holiday.date === dateString);
+        }
+        
+        // Render holiday list
+        function renderHolidayList() {
+            holidayListEl.innerHTML = '';
+            
+            predefinedHolidays.forEach(holiday => {
+                const holidayItem = document.createElement('div');
+                holidayItem.className = 'holiday-item';
+                
+                const date = new Date(holiday.date);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                holidayItem.innerHTML = `
+                    <span>${formattedDate} - ${holiday.name}</span>
+                    <span class="status-holiday">Holiday</span>
+                `;
+                
+                holidayListEl.appendChild(holidayItem);
+            });
+        }
+        
+        // Analytics functions
+        viewAnalyticsBtn.addEventListener('click', () => {
+            loadAnalyticsData();
+            dashboardSection.style.display = 'none';
+            analyticsSection.style.display = 'block';
+        });
+        
+        backToDashboardBtn.addEventListener('click', () => {
+            analyticsSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+        });
+        
+        printAnalyticsBtn.addEventListener('click', () => {
+            window.print();
+        });
+        
+        downloadPdfBtn.addEventListener('click', () => {
+            generatePDF();
+        });
+        
+        // Load analytics data
+        function loadAnalyticsData() {
+            if (!currentUser) return;
+            
+            const startDate = new Date(currentYear, currentMonth, 1);
+            const endDate = new Date(currentYear, currentMonth + 1, 0);
+            
+            let totalPresent = 0;
+            let totalAbsent = 0;
+            let totalHolidays = 0;
+            let totalHours = 0;
+            let totalOvertime = 0;
+            
+            // Clear table
+            analyticsTableBody.innerHTML = '';
+            
+            // Set report details
+            reportEmployeeName.textContent = `Employee: ${userData.name}`;
+            reportPeriod.textContent = `Period: ${startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+            
+            // Get all attendance records for the month
+            db.collection('attendance').doc(currentUser.uid).collection('records')
+                .where('date', '>=', formatDate(startDate))
+                .where('date', '<=', formatDate(endDate))
+                .orderBy('date', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        const record = doc.data();
+                        
+                        // Count statuses
+                        if (record.status === 'present') {
+                            totalPresent++;
+                            
+                            // Add hours if available
+                            if (record.hoursWorked) {
+                                totalHours += record.hoursWorked;
+                            }
+                            
+                            // Add overtime if available
+                            if (record.overtime) {
+                                totalOvertime += record.overtime;
+                            }
+                        } else if (record.status === 'absent') {
+                            totalAbsent++;
+                        } else if (record.status === 'holiday') {
+                            totalHolidays++;
+                        }
+                        
+                        // Add to analytics table
+                        addAnalyticsTableRow(record);
+                    });
+                    
+                    // Update analytics stats
+                    totalPresentEl.textContent = totalPresent;
+                    totalAbsentEl.textContent = totalAbsent;
+                    totalHolidaysEl.textContent = totalHolidays;
+                    totalHoursEl.textContent = formatHoursToHhMm(totalHours);
+                    totalOvertimeEl.textContent = formatHoursToHhMm(totalOvertime);
+                })
+                .catch((error) => {
+                    console.error('Error loading analytics data:', error);
+                });
+        }
+        
+        // Add row to analytics table
+        function addAnalyticsTableRow(record) {
+            const row = document.createElement('tr');
+            
+            const date = new Date(record.date);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                year: 'numeric',
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            if (record.status === 'present') {
+                statusText = 'Present';
+                statusClass = 'status-present';
+            } else if (record.status === 'absent') {
+                statusText = 'Absent';
+                statusClass = 'status-absent';
+            } else if (record.status === 'holiday') {
+                statusText = 'Holiday';
+                statusClass = 'status-holiday';
+            }
+            
+            let checkInTime = '-';
+            let checkOutTime = '-';
+            let hoursWorked = '-';
+            let overtime = '-';
+            let lateBy = '-';
+            
+            if (record.checkIn) {
+                const checkIn = new Date(record.checkIn);
+                checkInTime = formatTimeForDisplay(checkIn.toTimeString().substring(0, 5));
+                
+                // Calculate late by
+                const officeStart = new Date(date);
+                const [officeHours, officeMinutes] = officeStartTime.split(':');
+                officeStart.setHours(parseInt(officeHours), parseInt(officeMinutes), 0, 0);
+                
+                if (checkIn > officeStart) {
+                    const lateMs = checkIn - officeStart;
+                    const lateMins = Math.floor(lateMs / 60000);
+                    lateBy = `${lateMins} mins`;
+                }
+            }
+            
+            if (record.checkOut) {
+                const checkOut = new Date(record.checkOut);
+                checkOutTime = formatTimeForDisplay(checkOut.toTimeString().substring(0, 5));
+            }
+            
+            if (record.hoursWorked) {
+                hoursWorked = formatHoursToHhMm(record.hoursWorked);
+            }
+            
+            if (record.overtime) {
+                overtime = formatHoursToHhMm(record.overtime);
+            }
+            
+            row.innerHTML = `
+                <td>${formattedDate}</td>
+                <td><span class="${statusClass}">${statusText}</span></td>
+                <td>${checkInTime}</td>
+                <td>${checkOutTime}</td>
+                <td>${hoursWorked}</td>
+                <td>${overtime}</td>
+                <td>${lateBy}</td>
+            `;
+            
+            analyticsTableBody.appendChild(row);
+        }
+        
+        // Generate PDF report
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Employee Attendance Report', 105, 15, { align: 'center' });
+            
+            // Add employee details
+            doc.setFontSize(12);
+            doc.text(`Employee: ${userData.name}`, 14, 25);
+            doc.text(`Period: ${new Date(currentYear, currentMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`, 14, 32);
+            
+            // Add summary table
+            doc.autoTable({
+                startY: 40,
+                head: [['Total Present', 'Total Absent', 'Total Holidays', 'Total Hours', 'Overtime Hours']],
+                body: [[
+                    totalPresentEl.textContent,
+                    totalAbsentEl.textContent,
+                    totalHolidaysEl.textContent,
+                    totalHoursEl.textContent,
+                    totalOvertimeEl.textContent
+                ]],
+                theme: 'grid',
+                headStyles: { fillColor: [78, 115, 223] }
+            });
+            
+            // Add detailed attendance table
+            const tableColumn = ["Date", "Status", "Check In", "Check Out", "Hours", "Overtime", "Late By"];
+            const tableRows = [];
+            
+            const rows = analyticsTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = [
+                    cells[0].textContent,
+                    cells[1].textContent,
+                    cells[2].textContent,
+                    cells[3].textContent,
+                    cells[4].textContent,
+                    cells[5].textContent,
+                    cells[6].textContent
+                ];
+                tableRows.push(rowData);
+            });
+            
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [78, 115, 223] },
+                styles: { fontSize: 9 },
+                margin: { left: 14, right: 14 }
+            });
+            
+            // Save the PDF
+            doc.save(`attendance_report_${currentYear}_${currentMonth+1}_${userData.username}.pdf`);
+        }
+        
+        // Utility functions
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function formatTimeForDisplay(timeStr) {
+            if (!timeStr) return '';
+            
+            const [hours, minutes] = timeStr.split(':');
+            const hourNum = parseInt(hours);
+            const period = hourNum >= 12 ? 'PM' : 'AM';
+            const displayHour = hourNum % 12 || 12;
+            
+            return `${displayHour}:${minutes} ${period}`;
+        }
+        
+        function formatHoursToHhMm(hours) {
+            if (!hours) return '0h 0m';
+            
+            const totalMinutes = hours * 60;
+            const h = Math.floor(totalMinutes / 60);
+            const m = Math.round(totalMinutes % 60);
+            
+            return `${h}h ${m}m`;
+        }
+        
+        function calculateHoursWorked() {
+            const now = new Date();
+            const checkInTime = new Date(now);
+            checkInTime.setSeconds(checkInTime.getSeconds() - secondsWorked);
+            
+            // Calculate total hours worked
+            const hoursWorked = secondsWorked / 3600;
+            
+            // Calculate overtime (hours beyond daily working hours)
+            let overtime = 0;
+            if (hoursWorked > dailyWorkingHours) {
+                overtime = hoursWorked - dailyWorkingHours;
+            }
+            
+            return {
+                hoursWorked: hoursWorked,
+                overtime: overtime
+            };
+        }
+        
+        // Initialize button states
+        updateButtonStates();
+    </script>
+</body>
+</html>
+
