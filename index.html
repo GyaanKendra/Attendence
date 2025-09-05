@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Attendance System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -400,6 +402,16 @@
             background: #4e5070;
         }
         
+        .download-btn {
+            background: #1cc88a;
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .download-btn:hover {
+            background: #17a673;
+        }
+        
         .overtime-badge {
             background: #fd7e14;
             color: #fff;
@@ -656,11 +668,11 @@
                             <div class="stat-label">Holidays</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-value" id="working-hours">0</div>
+                            <div class="stat-value" id="working-hours">0h 0m</div>
                             <div class="stat-label">Hours</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-value" id="overtime-hours">0</div>
+                            <div class="stat-value" id="overtime-hours">0h 0m</div>
                             <div class="stat-label">Overtime</div>
                         </div>
                     </div>
@@ -720,11 +732,11 @@
                         <div class="stat-label">Total Holidays</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value" id="total-hours">0</div>
+                        <div class="stat-value" id="total-hours">0h 0m</div>
                         <div class="stat-label">Total Hours</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value" id="total-overtime">0</div>
+                        <div class="stat-value" id="total-overtime">0h 0m</div>
                         <div class="stat-label">Overtime Hours</div>
                     </div>
                 </div>
@@ -750,6 +762,7 @@
                 </div>
                 
                 <button class="btn print-btn" id="print-analytics-btn">Print Report</button>
+                <button class="btn download-btn" id="download-pdf-btn">Download PDF</button>
                 <button class="btn btn-primary" id="back-to-dashboard-btn">Back to Dashboard</button>
             </div>
         </div>
@@ -815,6 +828,7 @@
         const viewAnalyticsBtn = document.getElementById('view-analytics-btn');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
         const printAnalyticsBtn = document.getElementById('print-analytics-btn');
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
         const totalPresentEl = document.getElementById('total-present');
         const totalAbsentEl = document.getElementById('total-absent');
         const totalHolidaysEl = document.getElementById('total-holidays');
@@ -1055,8 +1069,8 @@
                 isClockedIn = false;
                 updateButtonStates('checkedOut');
                 loadAttendanceData();
-                alert('Checked out successfully. Worked: ' + hoursWorked + ' hours' + 
-                      (overtime > 0 ? ' (Overtime: ' + overtime + ' hours)' : ''));
+                alert('Checked out successfully. Worked: ' + formatHoursToHhMm(hoursWorked) + 
+                      (overtime > 0 ? ' (Overtime: ' + formatHoursToHhMm(overtime) + ')' : ''));
             })
             .catch((error) => {
                 alert('Check-out error: ' + error.message);
@@ -1115,38 +1129,14 @@
             });
         });
         
-        // Check if a date is a holiday
-        function isHoliday(dateString) {
-            return predefinedHolidays.some(holiday => holiday.date === dateString);
-        }
-        
-        // Calculate hours worked and overtime based on office timings
-        function calculateHoursWorked() {
-            // Calculate total hours worked
-            const totalHours = (secondsWorked / 3600).toFixed(2);
-            
-            // Calculate overtime (hours beyond the scheduled daily working hours)
-            let overtime = 0;
-            if (totalHours > dailyWorkingHours) {
-                overtime = (totalHours - dailyWorkingHours).toFixed(2);
-            }
-            
-            return {
-                hoursWorked: totalHours,
-                overtime: overtime
-            };
-        }
-        
         // Timer functions
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             
-            timerInterval = setInterval(function() {
+            timerInterval = setInterval(() => {
                 secondsWorked++;
                 updateTimerDisplay();
             }, 1000);
-            
-            updateTimerDisplay();
         }
         
         function stopTimer() {
@@ -1161,206 +1151,232 @@
             const minutes = Math.floor((secondsWorked % 3600) / 60);
             const seconds = secondsWorked % 60;
             
-            timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timerEl.textContent = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+        }
+        
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+        
+        // Load attendance data for the current month
+        function loadAttendanceData() {
+            if (!currentUser) return;
+            
+            const startDate = new Date(currentYear, currentMonth, 1);
+            const endDate = new Date(currentYear, currentMonth + 1, 0);
+            
+            let presentDays = 0;
+            let absentDays = 0;
+            let holidayDays = 0;
+            let totalHours = 0;
+            let totalOvertime = 0;
+            
+            // Clear history
+            historyEl.innerHTML = '';
+            
+            // Get all attendance records for the month
+            db.collection('attendance').doc(currentUser.uid).collection('records')
+                .where('date', '>=', formatDate(startDate))
+                .where('date', '<=', formatDate(endDate))
+                .orderBy('date', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        const record = doc.data();
+                        
+                        // Count statuses
+                        if (record.status === 'present') {
+                            presentDays++;
+                            
+                            // Add hours if available
+                            if (record.hoursWorked) {
+                                totalHours += record.hoursWorked;
+                            }
+                            
+                            // Add overtime if available
+                            if (record.overtime) {
+                                totalOvertime += record.overtime;
+                            }
+                            
+                            // Check if today's record and user is still clocked in
+                            if (record.date === formatDate(new Date()) && record.checkIn && !record.checkOut) {
+                                isClockedIn = true;
+                                
+                                // Calculate seconds worked from check-in time
+                                const checkInTime = new Date(record.checkIn);
+                                const now = new Date();
+                                secondsWorked = Math.floor((now - checkInTime) / 1000);
+                                
+                                startTimer();
+                                updateButtonStates('checkedIn');
+                            }
+                        } else if (record.status === 'absent') {
+                            absentDays++;
+                        } else if (record.status === 'holiday') {
+                            holidayDays++;
+                        }
+                        
+                        // Add to history
+                        addHistoryItem(record);
+                    });
+                    
+                    // Update stats
+                    presentDaysEl.textContent = presentDays;
+                    absentDaysEl.textContent = absentDays;
+                    holidayDaysEl.textContent = holidayDays;
+                    workingHoursEl.textContent = formatHoursToHhMm(totalHours);
+                    overtimeHoursEl.textContent = formatHoursToHhMm(totalOvertime);
+                })
+                .catch((error) => {
+                    console.error('Error loading attendance data:', error);
+                });
+        }
+        
+        // Add history item to the list
+        function addHistoryItem(record) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            
+            const date = new Date(record.date);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            if (record.status === 'present') {
+                statusText = 'Present';
+                statusClass = 'status-present';
+                
+                if (record.checkIn) {
+                    const checkInTime = new Date(record.checkIn);
+                    statusText += ` (${formatTimeForDisplay(checkInTime.toTimeString().substring(0, 5))}`;
+                    
+                    if (record.checkOut) {
+                        const checkOutTime = new Date(record.checkOut);
+                        statusText += ` - ${formatTimeForDisplay(checkOutTime.toTimeString().substring(0, 5))})`;
+                        
+                        if (record.hoursWorked) {
+                            statusText += ` - ${formatHoursToHhMm(record.hoursWorked)}`;
+                            
+                            if (record.overtime > 0) {
+                                statusText += `<span class="overtime-badge">+${formatHoursToHhMm(record.overtime)} OT</span>`;
+                            }
+                        }
+                    } else {
+                        statusText += ')';
+                    }
+                }
+            } else if (record.status === 'absent') {
+                statusText = 'Absent';
+                statusClass = 'status-absent';
+            } else if (record.status === 'holiday') {
+                statusText = 'Holiday';
+                statusClass = 'status-holiday';
+            }
+            
+            historyItem.innerHTML = `
+                <span class="history-date">${formattedDate}</span>
+                <span class="history-status ${statusClass}">${statusText}</span>
+            `;
+            
+            historyEl.appendChild(historyItem);
         }
         
         // Update button states based on current status
         function updateButtonStates(status) {
-            switch(status) {
-                case 'checkedIn':
-                    checkinBtn.disabled = true;
-                    checkoutBtn.disabled = false;
-                    absentBtn.disabled = true;
-                    holidayBtn.disabled = true;
-                    checkinBtn.textContent = 'Checked In';
-                    break;
-                case 'checkedOut':
-                    checkinBtn.disabled = true;
-                    checkoutBtn.disabled = true;
-                    absentBtn.disabled = true;
-                    holidayBtn.disabled = true;
-                    checkinBtn.textContent = 'Checked In';
-                    checkoutBtn.textContent = 'Checked Out';
-                    break;
-                case 'absent':
-                    checkinBtn.disabled = true;
-                    checkoutBtn.disabled = true;
-                    absentBtn.disabled = true;
-                    holidayBtn.disabled = true;
-                    absentBtn.textContent = 'Absent';
-                    break;
-                case 'holiday':
-                    checkinBtn.disabled = true;
-                    checkoutBtn.disabled = true;
-                    absentBtn.disabled = true;
-                    holidayBtn.disabled = true;
-                    holidayBtn.textContent = 'Holiday';
-                    break;
-                default:
-                    checkinBtn.disabled = false;
-                    checkoutBtn.disabled = true;
-                    absentBtn.disabled = false;
-                    holidayBtn.disabled = false;
-                    checkinBtn.textContent = 'Check In';
-                    checkoutBtn.textContent = 'Check Out';
-                    absentBtn.textContent = 'Mark Absent';
-                    holidayBtn.textContent = 'Mark Holiday';
-            }
-        }
-        
-        // Load attendance data
-        function loadAttendanceData() {
-            const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
-            
-            // Get attendance records for current month
-            db.collection('attendance').doc(currentUser.uid).collection('records')
-                .where('date', '>=', `${monthKey}-01`)
-                .where('date', '<=', `${monthKey}-31`)
-                .get()
-                .then((querySnapshot) => {
-                    let presentCount = 0;
-                    let absentCount = 0;
-                    let holidayCount = 0;
-                    let totalHours = 0;
-                    let totalOvertime = 0;
-                    const historyItems = [];
-                    
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        
-                        if (data.status === 'present') {
-                            presentCount++;
-                            if (data.hoursWorked) {
-                                totalHours += parseFloat(data.hoursWorked);
-                            }
-                            if (data.overtime) {
-                                totalOvertime += parseFloat(data.overtime);
-                            }
+            if (status === 'checkedIn') {
+                checkinBtn.disabled = true;
+                checkoutBtn.disabled = false;
+                absentBtn.disabled = true;
+                holidayBtn.disabled = true;
+            } else if (status === 'checkedOut') {
+                checkinBtn.disabled = true;
+                checkoutBtn.disabled = true;
+                absentBtn.disabled = true;
+                holidayBtn.disabled = true;
+            } else {
+                // Check if today is already marked
+                const todayKey = formatDate(new Date());
+                
+                db.collection('attendance').doc(currentUser.uid).collection('records').doc(todayKey).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const record = doc.data();
                             
-                            // Check if this is today's record
-                            const todayKey = formatDate(new Date());
-                            if (data.date === todayKey && data.checkIn && !data.checkOut) {
-                                // User is still clocked in
-                                isClockedIn = true;
-                                const checkInTime = new Date(data.checkIn);
-                                secondsWorked = Math.floor((new Date() - checkInTime) / 1000);
-                                startTimer();
-                                updateButtonStates('checkedIn');
+                            if (record.status === 'present') {
+                                if (record.checkOut) {
+                                    // Already checked out
+                                    checkinBtn.disabled = true;
+                                    checkoutBtn.disabled = true;
+                                    absentBtn.disabled = true;
+                                    holidayBtn.disabled = true;
+                                } else {
+                                    // Checked in but not out
+                                    checkinBtn.disabled = true;
+                                    checkoutBtn.disabled = false;
+                                    absentBtn.disabled = true;
+                                    holidayBtn.disabled = true;
+                                    
+                                    // Start timer
+                                    isClockedIn = true;
+                                    if (record.checkIn) {
+                                        const checkInTime = new Date(record.checkIn);
+                                        const now = new Date();
+                                        secondsWorked = Math.floor((now - checkInTime) / 1000);
+                                        startTimer();
+                                    }
+                                }
+                            } else if (record.status === 'absent') {
+                                checkinBtn.disabled = true;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = true;
+                                holidayBtn.disabled = true;
+                            } else if (record.status === 'holiday') {
+                                checkinBtn.disabled = true;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = true;
+                                holidayBtn.disabled = true;
                             }
-                        } else if (data.status === 'absent') {
-                            absentCount++;
-                            
-                            // Check if this is today's record
-                            const todayKey = formatDate(new Date());
-                            if (data.date === todayKey) {
-                                updateButtonStates('absent');
-                            }
-                        } else if (data.status === 'holiday') {
-                            holidayCount++;
-                            
-                            // Check if this is today's record
-                            const todayKey = formatDate(new Date());
-                            if (data.date === todayKey) {
-                                updateButtonStates('holiday');
+                        } else {
+                            // No record for today, check if it's a holiday
+                            if (isHoliday(todayKey)) {
+                                checkinBtn.disabled = true;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = true;
+                                holidayBtn.disabled = true;
+                            } else {
+                                // Enable all buttons
+                                checkinBtn.disabled = false;
+                                checkoutBtn.disabled = true;
+                                absentBtn.disabled = false;
+                                holidayBtn.disabled = false;
                             }
                         }
-                        
-                        // Add to history
-                        historyItems.push(data);
                     });
-                    
-                    // Update stats
-                    presentDaysEl.textContent = presentCount;
-                    absentDaysEl.textContent = absentCount;
-                    holidayDaysEl.textContent = holidayCount;
-                    workingHoursEl.textContent = totalHours.toFixed(1);
-                    overtimeHoursEl.textContent = totalOvertime.toFixed(1);
-                    
-                    // Render history
-                    renderHistory(historyItems);
-                })
-                .catch((error) => {
-                    console.error('Error loading attendance data: ', error);
-                });
+            }
         }
         
-        // Render attendance history
-        function renderHistory(historyItems) {
-            // Clear existing history
-            historyEl.innerHTML = '';
-            
-            // Sort by date descending
-            historyItems.sort((a, b) => b.date.localeCompare(a.date));
-            
-            // Show only last 7 records
-            const recentItems = historyItems.slice(0, 7);
-            
-            // Add to history
-            recentItems.forEach(item => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                
-                const dateParts = item.date.split('-');
-                const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-                const formattedDate = date.toLocaleDateString('en-IN', {
-                    weekday: 'short',
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                });
-                
-                let statusText = '';
-                let statusClass = '';
-                
-                if (item.status === 'present') {
-                    if (item.checkIn && item.checkOut) {
-                        statusText = `Present (${item.hoursWorked} hrs)`;
-                        statusClass = 'status-present';
-                        
-                        // Add overtime badge if applicable
-                        if (item.overtime && item.overtime > 0) {
-                            statusText += ` <span class="overtime-badge">+${item.overtime}h OT</span>`;
-                        }
-                    } else {
-                        statusText = 'Present (In Progress)';
-                        statusClass = 'status-working';
-                    }
-                } else if (item.status === 'absent') {
-                    statusText = 'Absent';
-                    statusClass = 'status-absent';
-                } else if (item.status === 'holiday') {
-                    statusText = 'Holiday';
-                    statusClass = 'status-holiday';
-                }
-                
-                historyItem.innerHTML = `
-                    <span class="history-date">${formattedDate}</span>
-                    <span class="history-status ${statusClass}">${statusText}</span>
-                `;
-                
-                historyEl.appendChild(historyItem);
-            });
-            
-            // Show message if no history
-            if (recentItems.length === 0) {
-                historyEl.innerHTML = '<div class="history-item">No attendance records yet</div>';
-            }
+        // Check if a date is a holiday
+        function isHoliday(dateString) {
+            return predefinedHolidays.some(holiday => holiday.date === dateString);
         }
         
         // Render holiday list
         function renderHolidayList() {
-            // Clear existing list
             holidayListEl.innerHTML = '';
             
-            // Add holidays to the list
             predefinedHolidays.forEach(holiday => {
                 const holidayItem = document.createElement('div');
                 holidayItem.className = 'holiday-item';
                 
                 const date = new Date(holiday.date);
-                const formattedDate = date.toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'long'
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
                 });
                 
                 holidayItem.innerHTML = `
@@ -1370,20 +1386,6 @@
                 
                 holidayListEl.appendChild(holidayItem);
             });
-        }
-        
-        // Format date as YYYY-MM-DD
-        function formatDate(date) {
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        }
-        
-        // Format time for display (convert 24h to 12h)
-        function formatTimeForDisplay(timeStr) {
-            const [hours, minutes] = timeStr.split(':');
-            const h = parseInt(hours);
-            const period = h >= 12 ? 'PM' : 'AM';
-            const displayHours = h % 12 || 12;
-            return `${displayHours}:${minutes} ${period}`;
         }
         
         // Analytics functions
@@ -1399,153 +1401,265 @@
         });
         
         printAnalyticsBtn.addEventListener('click', () => {
-            // Set report header information
-            reportEmployeeName.textContent = `Employee: ${userData.name}`;
-            
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            ];
-            reportPeriod.textContent = `Period: ${monthNames[currentMonth]} ${currentYear}`;
-            
             window.print();
         });
         
+        downloadPdfBtn.addEventListener('click', () => {
+            generatePDF();
+        });
+        
+        // Load analytics data
         function loadAnalyticsData() {
-            // Get all attendance records
+            if (!currentUser) return;
+            
+            const startDate = new Date(currentYear, currentMonth, 1);
+            const endDate = new Date(currentYear, currentMonth + 1, 0);
+            
+            let totalPresent = 0;
+            let totalAbsent = 0;
+            let totalHolidays = 0;
+            let totalHours = 0;
+            let totalOvertime = 0;
+            
+            // Clear table
+            analyticsTableBody.innerHTML = '';
+            
+            // Set report details
+            reportEmployeeName.textContent = `Employee: ${userData.name}`;
+            reportPeriod.textContent = `Period: ${startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+            
+            // Get all attendance records for the month
             db.collection('attendance').doc(currentUser.uid).collection('records')
+                .where('date', '>=', formatDate(startDate))
+                .where('date', '<=', formatDate(endDate))
                 .orderBy('date', 'desc')
                 .get()
                 .then((querySnapshot) => {
-                    let totalPresent = 0;
-                    let totalAbsent = 0;
-                    let totalHolidays = 0;
-                    let totalHours = 0;
-                    let totalOvertime = 0;
-                    const analyticsData = [];
-                    
                     querySnapshot.forEach((doc) => {
-                        const data = doc.data();
+                        const record = doc.data();
                         
-                        if (data.status === 'present') {
+                        // Count statuses
+                        if (record.status === 'present') {
                             totalPresent++;
-                            if (data.hoursWorked) {
-                                totalHours += parseFloat(data.hoursWorked);
+                            
+                            // Add hours if available
+                            if (record.hoursWorked) {
+                                totalHours += record.hoursWorked;
                             }
-                            if (data.overtime) {
-                                totalOvertime += parseFloat(data.overtime);
+                            
+                            // Add overtime if available
+                            if (record.overtime) {
+                                totalOvertime += record.overtime;
                             }
-                        } else if (data.status === 'absent') {
+                        } else if (record.status === 'absent') {
                             totalAbsent++;
-                        } else if (data.status === 'holiday') {
+                        } else if (record.status === 'holiday') {
                             totalHolidays++;
                         }
                         
-                        analyticsData.push(data);
+                        // Add to analytics table
+                        addAnalyticsTableRow(record);
                     });
                     
                     // Update analytics stats
                     totalPresentEl.textContent = totalPresent;
                     totalAbsentEl.textContent = totalAbsent;
                     totalHolidaysEl.textContent = totalHolidays;
-                    totalHoursEl.textContent = totalHours.toFixed(1);
-                    totalOvertimeEl.textContent = totalOvertime.toFixed(1);
-                    
-                    // Render analytics table
-                    renderAnalyticsTable(analyticsData);
+                    totalHoursEl.textContent = formatHoursToHhMm(totalHours);
+                    totalOvertimeEl.textContent = formatHoursToHhMm(totalOvertime);
                 })
                 .catch((error) => {
-                    console.error('Error loading analytics data: ', error);
+                    console.error('Error loading analytics data:', error);
                 });
         }
         
-        function renderAnalyticsTable(data) {
-            // Clear existing table
-            analyticsTableBody.innerHTML = '';
+        // Add row to analytics table
+        function addAnalyticsTableRow(record) {
+            const row = document.createElement('tr');
             
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                
-                const dateParts = item.date.split('-');
-                const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-                const formattedDate = date.toLocaleDateString('en-IN');
-                
-                let statusText = '';
-                let checkInTime = '-';
-                let checkOutTime = '-';
-                let hoursWorked = '-';
-                let overtime = '-';
-                let lateBy = '-';
-                
-                if (item.status === 'present') {
-                    statusText = 'Present';
-                    
-                    if (item.checkIn) {
-                        const checkIn = new Date(item.checkIn);
-                        checkInTime = checkIn.toLocaleTimeString('en-IN');
-                        
-                        // Calculate if late based on office start time
-                        if (item.officeStartTime) {
-                            const [officeHours, officeMins] = item.officeStartTime.split(':');
-                            const startTime = new Date(checkIn);
-                            startTime.setHours(parseInt(officeHours), parseInt(officeMins), 0, 0);
-                            
-                            if (checkIn > startTime) {
-                                const lateMs = checkIn - startTime;
-                                const lateMins = Math.floor(lateMs / 60000);
-                                lateBy = `${lateMins} mins`;
-                            } else {
-                                lateBy = 'On time';
-                            }
-                        }
-                    }
-                    
-                    if (item.checkOut) {
-                        const checkOut = new Date(item.checkOut);
-                        checkOutTime = checkOut.toLocaleTimeString('en-IN');
-                    }
-                    
-                    if (item.hoursWorked) {
-                        hoursWorked = item.hoursWorked;
-                    }
-                    
-                    if (item.overtime) {
-                        overtime = item.overtime > 0 ? item.overtime + ' hrs' : '-';
-                    }
-                } else if (item.status === 'absent') {
-                    statusText = 'Absent';
-                } else if (item.status === 'holiday') {
-                    statusText = 'Holiday';
-                }
-                
-                row.innerHTML = `
-                    <td>${formattedDate}</td>
-                    <td>${statusText}</td>
-                    <td>${checkInTime}</td>
-                    <td>${checkOutTime}</td>
-                    <td>${hoursWorked}</td>
-                    <td>${overtime}</td>
-                    <td>${lateBy}</td>
-                `;
-                
-                analyticsTableBody.appendChild(row);
+            const date = new Date(record.date);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                year: 'numeric',
+                month: 'short', 
+                day: 'numeric' 
             });
             
-            // Show message if no data
-            if (data.length === 0) {
-                analyticsTableBody.innerHTML = '<tr><td colspan="7">No attendance records found</td></tr>';
+            let statusText = '';
+            let statusClass = '';
+            
+            if (record.status === 'present') {
+                statusText = 'Present';
+                statusClass = 'status-present';
+            } else if (record.status === 'absent') {
+                statusText = 'Absent';
+                statusClass = 'status-absent';
+            } else if (record.status === 'holiday') {
+                statusText = 'Holiday';
+                statusClass = 'status-holiday';
             }
+            
+            let checkInTime = '-';
+            let checkOutTime = '-';
+            let hoursWorked = '-';
+            let overtime = '-';
+            let lateBy = '-';
+            
+            if (record.checkIn) {
+                const checkIn = new Date(record.checkIn);
+                checkInTime = formatTimeForDisplay(checkIn.toTimeString().substring(0, 5));
+                
+                // Calculate late by
+                const officeStart = new Date(date);
+                const [officeHours, officeMinutes] = officeStartTime.split(':');
+                officeStart.setHours(parseInt(officeHours), parseInt(officeMinutes), 0, 0);
+                
+                if (checkIn > officeStart) {
+                    const lateMs = checkIn - officeStart;
+                    const lateMins = Math.floor(lateMs / 60000);
+                    lateBy = `${lateMins} mins`;
+                }
+            }
+            
+            if (record.checkOut) {
+                const checkOut = new Date(record.checkOut);
+                checkOutTime = formatTimeForDisplay(checkOut.toTimeString().substring(0, 5));
+            }
+            
+            if (record.hoursWorked) {
+                hoursWorked = formatHoursToHhMm(record.hoursWorked);
+            }
+            
+            if (record.overtime) {
+                overtime = formatHoursToHhMm(record.overtime);
+            }
+            
+            row.innerHTML = `
+                <td>${formattedDate}</td>
+                <td><span class="${statusClass}">${statusText}</span></td>
+                <td>${checkInTime}</td>
+                <td>${checkOutTime}</td>
+                <td>${hoursWorked}</td>
+                <td>${overtime}</td>
+                <td>${lateBy}</td>
+            `;
+            
+            analyticsTableBody.appendChild(row);
         }
         
-        // Initialize the app
-        function initApp() {
-            authSection.style.display = 'block';
-            dashboardSection.style.display = 'none';
-            analyticsSection.style.display = 'none';
-            updateButtonStates('default');
+        // Generate PDF report
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Employee Attendance Report', 105, 15, { align: 'center' });
+            
+            // Add employee details
+            doc.setFontSize(12);
+            doc.text(`Employee: ${userData.name}`, 14, 25);
+            doc.text(`Period: ${new Date(currentYear, currentMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`, 14, 32);
+            
+            // Add summary table
+            doc.autoTable({
+                startY: 40,
+                head: [['Total Present', 'Total Absent', 'Total Holidays', 'Total Hours', 'Overtime Hours']],
+                body: [[
+                    totalPresentEl.textContent,
+                    totalAbsentEl.textContent,
+                    totalHolidaysEl.textContent,
+                    totalHoursEl.textContent,
+                    totalOvertimeEl.textContent
+                ]],
+                theme: 'grid',
+                headStyles: { fillColor: [78, 115, 223] }
+            });
+            
+            // Add detailed attendance table
+            const tableColumn = ["Date", "Status", "Check In", "Check Out", "Hours", "Overtime", "Late By"];
+            const tableRows = [];
+            
+            const rows = analyticsTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = [
+                    cells[0].textContent,
+                    cells[1].textContent,
+                    cells[2].textContent,
+                    cells[3].textContent,
+                    cells[4].textContent,
+                    cells[5].textContent,
+                    cells[6].textContent
+                ];
+                tableRows.push(rowData);
+            });
+            
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [78, 115, 223] },
+                styles: { fontSize: 9 },
+                margin: { left: 14, right: 14 }
+            });
+            
+            // Save the PDF
+            doc.save(`attendance_report_${currentYear}_${currentMonth+1}_${userData.username}.pdf`);
         }
         
-        // Run the app
-        initApp();
+        // Utility functions
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function formatTimeForDisplay(timeStr) {
+            if (!timeStr) return '';
+            
+            const [hours, minutes] = timeStr.split(':');
+            const hourNum = parseInt(hours);
+            const period = hourNum >= 12 ? 'PM' : 'AM';
+            const displayHour = hourNum % 12 || 12;
+            
+            return `${displayHour}:${minutes} ${period}`;
+        }
+        
+        function formatHoursToHhMm(hours) {
+            if (!hours) return '0h 0m';
+            
+            const totalMinutes = hours * 60;
+            const h = Math.floor(totalMinutes / 60);
+            const m = Math.round(totalMinutes % 60);
+            
+            return `${h}h ${m}m`;
+        }
+        
+        function calculateHoursWorked() {
+            const now = new Date();
+            const checkInTime = new Date(now);
+            checkInTime.setSeconds(checkInTime.getSeconds() - secondsWorked);
+            
+            // Calculate total hours worked
+            const hoursWorked = secondsWorked / 3600;
+            
+            // Calculate overtime (hours beyond daily working hours)
+            let overtime = 0;
+            if (hoursWorked > dailyWorkingHours) {
+                overtime = hoursWorked - dailyWorkingHours;
+            }
+            
+            return {
+                hoursWorked: hoursWorked,
+                overtime: overtime
+            };
+        }
+        
+        // Initialize button states
+        updateButtonStates();
     </script>
 </body>
 </html>
