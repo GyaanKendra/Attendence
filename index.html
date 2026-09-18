@@ -171,18 +171,18 @@
         .form-group {
             margin-bottom: 20px;
             position: relative;
+            text-align: left;
         }
         
         .form-group label {
             display: block;
-            text-align: left;
             margin-bottom: 8px;
             font-weight: 500;
             color: var(--text-primary);
             font-size: 14px;
         }
         
-        .form-group input {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 14px 16px;
             border: 1px solid #ddd;
@@ -191,7 +191,7 @@
             transition: all 0.3s ease;
         }
         
-        .form-group input:focus {
+        .form-group input:focus, .form-group textarea:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
             outline: none;
@@ -266,6 +266,44 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+        }
+
+        /* Month Navigation Bar */
+        .month-navigator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f0f4ff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(67, 97, 238, 0.2);
+        }
+
+        .month-nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .month-nav-btn:hover {
+            background: #3551d8;
+            transform: translateY(-1px);
+        }
+
+        .month-display-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary);
         }
         
         .stats {
@@ -420,45 +458,56 @@
         .history-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 15px;
+            align-items: center;
+            padding: 14px 15px;
             border-bottom: 1px solid #e3e6f0;
             font-size: 14px;
             transition: all 0.2s ease;
             border-radius: 8px;
+            gap: 10px;
         }
         
         .history-item:hover {
             background: #f8f9fc;
-            transform: translateX(5px);
+            transform: translateX(3px);
         }
         
+        .history-info {
+            flex: 1;
+            text-align: left;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
         .history-date {
             color: var(--text-primary);
             font-weight: 500;
+            min-width: 110px;
         }
         
-        .history-status {
-            font-weight: 600;
+        .history-status-wrap {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
-        .status-present {
-            color: #1cc88a;
-        }
-        
-        .status-absent {
-            color: #e74a3b;
-        }
-        
-        .status-working {
-            color: #36b9cc;
-        }
-        
-        .status-holiday {
-            color: #f6c23e;
-        }
-        
-        .status-overtime {
-            color: #fd7e14;
+        .status-present { color: #10b981; font-weight: 600; }
+        .status-absent { color: #e74a3b; font-weight: 600; }
+        .status-holiday { color: #f6c23e; font-weight: 600; }
+
+        /* Original Orange Overtime Badge */
+        .overtime-badge {
+            background: #fd7e14;
+            color: #fff;
+            padding: 3px 9px;
+            border-radius: 15px;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            display: inline-block;
         }
         
         .footer {
@@ -496,7 +545,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            min-width: 600px;
+            min-width: 750px;
         }
         
         .analytics-table th, .analytics-table td {
@@ -545,26 +594,6 @@
             transform: translateY(-2px);
         }
         
-        .overtime-badge {
-            background: #fd7e14;
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-        
-        .holiday-badge {
-            background: #f6c23e;
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-        
         .report-header {
             display: none;
         }
@@ -600,6 +629,75 @@
         
         .holiday-item:last-child {
             border-bottom: none;
+        }
+
+        /* Note / Remark Buttons */
+        .btn-remark {
+            background: #edf2f7;
+            color: var(--primary);
+            border: 1px solid #cbd5e0;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .btn-remark.has-note {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-color: #7dd3fc;
+        }
+        
+        .btn-remark:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Modal Overlay & Box */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        
+        .modal-box {
+            background: white;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
         }
         
         .guide-modal {
@@ -659,13 +757,6 @@
             line-height: 1.6;
         }
         
-        .guide-step img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
         .help-btn {
             position: fixed;
             bottom: 20px;
@@ -701,26 +792,15 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            z-index: 1000;
-            transform: translateX(100%);
+            z-index: 2000;
+            transform: translateX(120%);
             transition: transform 0.3s ease;
         }
         
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            border-left: 4px solid #1cc88a;
-        }
-        
-        .notification.error {
-            border-left: 4px solid #e74a3b;
-        }
-        
-        .notification.info {
-            border-left: 4px solid #36b9cc;
-        }
+        .notification.show { transform: translateX(0); }
+        .notification.success { border-left: 4px solid #1cc88a; }
+        .notification.error { border-left: 4px solid #e74a3b; }
+        .notification.info { border-left: 4px solid #36b9cc; }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -728,150 +808,43 @@
         }
         
         @media (max-width: 768px) {
-            .container {
-                border-radius: 10px;
-            }
-            
-            .header {
-                padding: 20px 15px;
-            }
-            
-            .header h1 {
-                font-size: 22px;
-            }
-            
-            .content {
-                padding: 20px 15px;
-            }
-            
-            .stats {
-                gap: 10px;
-            }
-            
-            .stat {
-                min-width: 80px;
-                padding: 12px;
-            }
-            
-            .stat-value {
-                font-size: 22px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .action-buttons .btn {
-                width: 100%;
-            }
-            
-            .timer {
-                font-size: 24px;
-                padding: 12px;
-            }
-            
-            .attendance-card {
-                padding: 20px;
-            }
-            
-            .attendance-card h2 {
-                font-size: 18px;
-            }
-            
-            .guide-content {
-                padding: 20px;
-            }
+            .container { border-radius: 10px; }
+            .header { padding: 20px 15px; }
+            .header h1 { font-size: 22px; }
+            .content { padding: 20px 15px; }
+            .stats { gap: 10px; }
+            .stat { min-width: 80px; padding: 12px; }
+            .stat-value { font-size: 22px; }
+            .action-buttons { flex-direction: column; }
+            .action-buttons .btn { width: 100%; }
+            .timer { font-size: 24px; padding: 12px; }
+            .attendance-card { padding: 20px; }
+            .attendance-card h2 { font-size: 18px; }
+            .guide-content { padding: 20px; }
         }
         
         @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .header p {
-                font-size: 13px;
-            }
-            
-            .profile {
-                width: 45px;
-                height: 45px;
-                font-size: 18px;
-            }
-            
-            .stat {
-                min-width: 70px;
-                padding: 10px;
-            }
-            
-            .stat-value {
-                font-size: 20px;
-            }
-            
-            .stat-label {
-                font-size: 12px;
-            }
-            
-            .timer {
-                font-size: 22px;
-                padding: 10px;
-            }
-            
-            .attendance-card h2 {
-                font-size: 17px;
-            }
-            
-            .history h3 {
-                font-size: 16px;
-            }
-            
-            .history-item {
-                font-size: 13px;
-                padding: 10px;
-            }
-            
-            .btn {
-                padding: 14px;
-                font-size: 15px;
-            }
-            
-            .help-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-                bottom: 15px;
-                right: 15px;
-            }
+            .header h1 { font-size: 20px; }
+            .header p { font-size: 13px; }
+            .profile { width: 45px; height: 45px; font-size: 18px; }
+            .stat { min-width: 70px; padding: 10px; }
+            .stat-value { font-size: 20px; }
+            .stat-label { font-size: 12px; }
+            .timer { font-size: 22px; padding: 10px; }
+            .btn { padding: 14px; font-size: 15px; }
+            .help-btn { width: 50px; height: 50px; font-size: 20px; bottom: 15px; right: 15px; }
         }
         
         @media (min-width: 992px) {
-            .container {
-                max-width: 900px;
-            }
+            .container { max-width: 950px; }
         }
         
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .analytics-section, .analytics-section * {
-                visibility: visible;
-            }
-            .analytics-section {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-            .report-header {
-                display: block;
-                text-align: center;
-                margin-bottom: 20px;
-                padding-bottom: 15px;
-                border-bottom: 2px solid var(--primary);
-            }
-            .btn {
-                display: none;
-            }
+            body * { visibility: hidden; }
+            .analytics-section, .analytics-section * { visibility: visible; }
+            .analytics-section { position: absolute; left: 0; top: 0; width: 100%; }
+            .report-header { display: block; text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--primary); }
+            .btn, .month-navigator, .btn-remark { display: none !important; }
         }
     </style>
 </head>
@@ -901,6 +874,11 @@
                     <div class="form-group">
                         <label for="login-password"><i class="fas fa-lock"></i> Password</label>
                         <input type="password" id="login-password" placeholder="Enter your password">
+                    </div>
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <a href="javascript:void(0)" id="forgot-password-link" style="color: var(--primary); text-decoration: none; font-size: 13.5px; font-weight: 500;">
+                            <i class="fas fa-key"></i> Forgot Password?
+                        </a>
                     </div>
                     <button class="btn btn-primary" id="login-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
                 </div>
@@ -947,15 +925,13 @@
                 <div class="user-info">
                     <h3 id="welcome-message"><i class="fas fa-smile"></i> Welcome, User!</h3>
                     <p id="user-office-hours"><i class="fas fa-clock"></i> Office Hours: 9:00 AM to 6:00 PM</p>
-                    <button class="btn btn-primary" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button class="btn btn-primary" id="logout-btn" style="max-width: 200px; margin: 15px auto 0 auto;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
                 
                 <div class="attendance-card">
                     <h2><i class="fas fa-calendar-day"></i> Today's Attendance</h2>
                     
-                    <div class="timer" id="timer">
-                        00:00:00
-                    </div>
+                    <div class="timer" id="timer">00:00:00</div>
                     
                     <div class="action-buttons">
                         <button class="btn btn-present" id="checkin-btn"><i class="fas fa-sign-in-alt"></i> Check In</button>
@@ -964,9 +940,16 @@
                         <button class="btn btn-clock" id="checkout-btn"><i class="fas fa-sign-out-alt"></i> Check Out</button>
                     </div>
                 </div>
+
+                <!-- Month Navigator (Dashboard) -->
+                <div class="month-navigator">
+                    <button class="month-nav-btn" id="prev-month-dash"><i class="fas fa-chevron-left"></i> Previous</button>
+                    <div class="month-display-title" id="month-display-dash">Current Month</div>
+                    <button class="month-nav-btn" id="next-month-dash">Next <i class="fas fa-chevron-right"></i></button>
+                </div>
                 
                 <div class="attendance-card">
-                    <h2><i class="fas fa-chart-pie"></i> This Month's Statistics</h2>
+                    <h2><i class="fas fa-chart-pie"></i> Selected Month's Statistics</h2>
                     
                     <div class="stats">
                         <div class="stat">
@@ -987,38 +970,23 @@
                         </div>
                         <div class="stat">
                             <div class="stat-value" id="overtime-hours">0h 0m</div>
-                            <div class="stat-label">Overtime</div>
+                            <div class="stat-label">Net Overtime</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="holiday-section">
                     <h3><i class="fas fa-calendar-alt"></i> Upcoming Holidays</h3>
-                    <div class="holiday-list" id="holiday-list">
-                        <div class="holiday-item">
-                            <span>15 August - Independence Day</span>
-                            <span class="status-holiday">Holiday</span>
-                        </div>
-                        <div class="holiday-item">
-                            <span>2 October - Gandhi Jayanti</span>
-                            <span class="status-holiday">Holiday</span>
-                        </div>
-                        <div class="holiday-item">
-                            <span>25 December - Christmas</span>
-                            <span class="status-holiday">Holiday</span>
-                        </div>
-                    </div>
+                    <div class="holiday-list" id="holiday-list"></div>
                 </div>
                 
                 <div class="analytics-btn">
-                    <button class="btn btn-primary" id="view-analytics-btn"><i class="fas fa-chart-line"></i> View Attendance Analytics</button>
+                    <button class="btn btn-primary" id="view-analytics-btn"><i class="fas fa-chart-line"></i> View Attendance Analytics & Remarks</button>
                 </div>
                 
                 <div class="history">
                     <h3><i class="fas fa-history"></i> Recent Attendance</h3>
-                    <div id="attendance-history">
-                        <!-- History items will be generated by JavaScript -->
-                    </div>
+                    <div id="attendance-history"></div>
                 </div>
             </div>
             
@@ -1027,7 +995,14 @@
                 <div class="report-header">
                     <h2>Employee Attendance Report</h2>
                     <p id="report-employee-name">Employee: John Doe</p>
-                    <p id="report-period">Period: January 2023</p>
+                    <p id="report-period">Period: January 2025</p>
+                </div>
+
+                <!-- Month Navigator (Analytics) -->
+                <div class="month-navigator">
+                    <button class="month-nav-btn" id="prev-month-ana"><i class="fas fa-chevron-left"></i> Previous</button>
+                    <div class="month-display-title" id="month-display-ana">Current Month</div>
+                    <button class="month-nav-btn" id="next-month-ana">Next <i class="fas fa-chevron-right"></i></button>
                 </div>
                 
                 <h2><i class="fas fa-chart-bar"></i> Attendance Analytics</h2>
@@ -1051,7 +1026,7 @@
                     </div>
                     <div class="stat">
                         <div class="stat-value" id="total-overtime">0h 0m</div>
-                        <div class="stat-label">Overtime Hours</div>
+                        <div class="stat-label">Net Overtime</div>
                     </div>
                 </div>
                 
@@ -1066,12 +1041,11 @@
                                 <th>Check Out</th>
                                 <th>Hours</th>
                                 <th>Overtime</th>
-                                <th>Late By</th>
+                                <th>Remarks / Reason</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="analytics-table-body">
-                            <!-- Analytics data will be generated by JavaScript -->
-                        </tbody>
+                        <tbody id="analytics-table-body"></tbody>
                     </table>
                 </div>
                 
@@ -1082,7 +1056,22 @@
         </div>
         
         <div class="footer">
-            <p>© 2023 Employee Attendance System | Premium Edition</p>
+            <p>© 2025 Employee Attendance System | Premium Edition</p>
+        </div>
+    </div>
+
+    <!-- Remark / Note Modal -->
+    <div class="modal-overlay" id="remark-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-date-title"><i class="fas fa-edit"></i> Add Remarks / Overtime Note</h3>
+                <span class="modal-close" id="close-remark-modal">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="remark-input">Reason / Work summary for this date:</label>
+                <textarea id="remark-input" rows="4" placeholder="e.g., 2 hrs Overtime for urgent delivery, or Left 1 hr early..."></textarea>
+            </div>
+            <button class="btn btn-primary" id="save-remark-btn"><i class="fas fa-save"></i> Save Remark</button>
         </div>
     </div>
 
@@ -1094,43 +1083,27 @@
             
             <div class="guide-step">
                 <h3><i class="fas fa-user-plus"></i> Step 1: Create an Account</h3>
-                <p>Click on the "Sign Up" tab and fill in all your details including:</p>
-                <p>- Your full name</p>
-                <p>- Email address</p>
-                <p>- Secure password</p>
-                <p>- Username</p>
-                <p>- Mobile number</p>
-                <p>- Set your office timings and daily working hours</p>
+                <p>Click on the "Sign Up" tab and fill in all your details including full name, email, username, mobile number, and daily shift target.</p>
             </div>
             
             <div class="guide-step">
-                <h3><i class="fas fa-sign-in-alt"></i> Step 2: Login</h3>
-                <p>After creating your account, use the "Login" tab to access the system with your email and password.</p>
+                <h3><i class="fas fa-fingerprint"></i> Step 2: Mark Attendance</h3>
+                <p>Click "Check In" when starting work and "Check Out" upon departure. Click "Absent" or "Holiday" when taking leave.</p>
             </div>
             
             <div class="guide-step">
-                <h3><i class="fas fa-fingerprint"></i> Step 3: Mark Attendance</h3>
-                <p>On the dashboard, you can:</p>
-                <p>- Click "Check In" when you arrive at work</p>
-                <p>- Click "Check Out" when you leave</p>
-                <p>- Mark yourself as "Absent" if you're not working that day</p>
-                <p>- Mark "Holiday" if it's a company holiday</p>
+                <h3><i class="fas fa-sticky-note"></i> Step 3: Add Overtime Remarks</h3>
+                <p>Click the <b>'+'</b> or <b>'Note'</b> button next to any date to add a description for extra duty or leaves.</p>
+            </div>
+
+            <div class="guide-step">
+                <h3><i class="fas fa-calendar-alt"></i> Step 4: View Previous Months</h3>
+                <p>Use the <b>'Previous'</b> and <b>'Next'</b> buttons above the cards to inspect past attendance and download past reports.</p>
             </div>
             
             <div class="guide-step">
-                <h3><i class="fas fa-chart-line"></i> Step 4: View Analytics</h3>
-                <p>Click "View Attendance Analytics" to see detailed reports of your attendance, working hours, and overtime.</p>
-                <p>You can print or download these reports as PDF for your records.</p>
-            </div>
-            
-            <div class="guide-step">
-                <h3><i class="fas fa-cog"></i> Step 5: Profile Management</h3>
-                <p>Click on the profile icon in the top right to update your personal information and settings.</p>
-            </div>
-            
-            <div class="guide-step">
-                <h3><i class="fas fa-question-circle"></i> Need More Help?</h3>
-                <p>If you encounter any issues or have questions, please contact your system administrator.</p>
+                <h3><i class="fas fa-chart-line"></i> Step 5: View Analytics & PDF</h3>
+                <p>Click "View Attendance Analytics" to see detailed logs and download an official PDF copy.</p>
             </div>
         </div>
     </div>
@@ -1143,7 +1116,7 @@
     <!-- Notification -->
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i>
-        <span id="notification-text">Operation completed successfully</span>
+        <span id="notification-text">Operation completed</span>
     </div>
 
     <script>
@@ -1157,7 +1130,6 @@
             appId: "1:448654487783:web:5be903e8130b472a1f3242"
         };
         
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -1179,6 +1151,8 @@
         const loginEmail = document.getElementById('login-email');
         const loginPassword = document.getElementById('login-password');
         const loginBtn = document.getElementById('login-btn');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+
         const signupName = document.getElementById('signup-name');
         const signupEmail = document.getElementById('signup-email');
         const signupPassword = document.getElementById('signup-password');
@@ -1216,6 +1190,22 @@
         const analyticsTableBody = document.getElementById('analytics-table-body');
         const reportEmployeeName = document.getElementById('report-employee-name');
         const reportPeriod = document.getElementById('report-period');
+
+        // Month Nav Elements
+        const prevMonthDash = document.getElementById('prev-month-dash');
+        const nextMonthDash = document.getElementById('next-month-dash');
+        const prevMonthAna = document.getElementById('prev-month-ana');
+        const nextMonthAna = document.getElementById('next-month-ana');
+        const monthDisplayDash = document.getElementById('month-display-dash');
+        const monthDisplayAna = document.getElementById('month-display-ana');
+
+        // Remark Modal Elements
+        const remarkModal = document.getElementById('remark-modal');
+        const closeRemarkModal = document.getElementById('close-remark-modal');
+        const remarkInput = document.getElementById('remark-input');
+        const saveRemarkBtn = document.getElementById('save-remark-btn');
+        const modalDateTitle = document.getElementById('modal-date-title');
+        let activeRemarkDate = null;
         
         // Variables
         let currentUser = null;
@@ -1223,14 +1213,12 @@
         let timerInterval = null;
         let secondsWorked = 0;
         let isClockedIn = false;
-        let currentDate = new Date();
-        let currentMonth = currentDate.getMonth();
-        let currentYear = currentDate.getFullYear();
+        let viewDate = new Date();
         let officeStartTime = "09:00";
         let officeEndTime = "18:00";
         let dailyWorkingHours = 8;
         
-        // Predefined holidays (can be extended)
+        // Predefined holidays
         const predefinedHolidays = [
             { date: "2025-01-26", name: "Republic Day" },
             { date: "2025-03-29", name: "Holi" },
@@ -1254,10 +1242,31 @@
             signupForm.classList.add('active');
             loginForm.classList.remove('active');
         });
+
+        // Month Navigation Events
+        prevMonthDash.addEventListener('click', () => changeMonth(-1));
+        nextMonthDash.addEventListener('click', () => changeMonth(1));
+        prevMonthAna.addEventListener('click', () => changeMonth(-1));
+        nextMonthAna.addEventListener('click', () => changeMonth(1));
+
+        function changeMonth(delta) {
+            viewDate.setMonth(viewDate.getMonth() + delta);
+            updateMonthLabels();
+            loadAttendanceData();
+            if (analyticsSection.style.display === 'block') {
+                loadAnalyticsData();
+            }
+        }
+
+        function updateMonthLabels() {
+            const label = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            monthDisplayDash.innerHTML = `<i class="fas fa-calendar-alt"></i> ${label}`;
+            monthDisplayAna.innerHTML = `<i class="fas fa-calendar-alt"></i> ${label}`;
+        }
         
         // Authentication functions
         loginBtn.addEventListener('click', () => {
-            const email = loginEmail.value;
+            const email = loginEmail.value.trim();
             const password = loginPassword.value;
             
             if (!email || !password) {
@@ -1275,13 +1284,27 @@
                     showNotification('Login error: ' + error.message, 'error');
                 });
         });
+
+        // Forgot Password
+        forgotPasswordLink.addEventListener('click', () => {
+            const email = prompt('Enter your registered email address to receive password reset link:');
+            if (email && email.trim() !== '') {
+                auth.sendPasswordResetEmail(email.trim())
+                    .then(() => {
+                        showNotification('Password reset link sent to your email!', 'success');
+                    })
+                    .catch(error => {
+                        showNotification(error.message, 'error');
+                    });
+            }
+        });
         
         signupBtn.addEventListener('click', () => {
-            const name = signupName.value;
-            const email = signupEmail.value;
+            const name = signupName.value.trim();
+            const email = signupEmail.value.trim();
             const password = signupPassword.value;
-            const username = signupUsername.value;
-            const mobile = signupMobile.value;
+            const username = signupUsername.value.trim();
+            const mobile = signupMobile.value.trim();
             const timeIn = signupTimeIn.value;
             const timeOut = signupTimeOut.value;
             const workingHours = parseFloat(signupWorkingHours.value);
@@ -1309,8 +1332,6 @@
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     currentUser = userCredential.user;
-                    
-                    // Save user data to Firestore
                     return db.collection('users').doc(currentUser.uid).set({
                         name: name,
                         email: email,
@@ -1338,6 +1359,7 @@
                     userData = null;
                     authSection.style.display = 'block';
                     dashboardSection.style.display = 'none';
+                    analyticsSection.style.display = 'none';
                     stopTimer();
                     showNotification('You have been logged out successfully', 'info');
                 })
@@ -1346,7 +1368,6 @@
                 });
         });
         
-        // Load user data from Firestore
         function loadUserData() {
             db.collection('users').doc(currentUser.uid).get()
                 .then((doc) => {
@@ -1354,7 +1375,6 @@
                         userData = doc.data();
                         welcomeMessage.innerHTML = `<i class="fas fa-smile"></i> Welcome, ${userData.name}!`;
                         
-                        // Set office timings from user data
                         if (userData.officeTimeIn && userData.officeTimeOut) {
                             officeStartTime = userData.officeTimeIn;
                             officeEndTime = userData.officeTimeOut;
@@ -1367,8 +1387,10 @@
                         
                         authSection.style.display = 'none';
                         dashboardSection.style.display = 'block';
+                        updateMonthLabels();
                         loadAttendanceData();
                         renderHolidayList();
+                        updateButtonStates();
                     }
                 })
                 .catch((error) => {
@@ -1376,7 +1398,6 @@
                 });
         }
         
-        // Check if user is already logged in
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
@@ -1389,13 +1410,11 @@
             const now = new Date();
             const dateKey = formatDate(now);
             
-            // Check if today is a holiday
             if (isHoliday(dateKey)) {
                 showNotification('Today is a holiday! You cannot check in on a holiday.', 'error');
                 return;
             }
             
-            // Check if already checked in today
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).get()
                 .then((doc) => {
                     if (doc.exists && doc.data().checkIn) {
@@ -1403,7 +1422,6 @@
                         return;
                     }
                     
-                    // Save check-in time
                     return db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
                         date: dateKey,
                         checkIn: now.toISOString(),
@@ -1436,23 +1454,18 @@
             
             const now = new Date();
             const dateKey = formatDate(now);
+            const hoursWorked = secondsWorked / 3600;
             
-            // Calculate hours worked and overtime
-            const { hoursWorked, overtime } = calculateHoursWorked();
-            
-            // Save check-out time and hours worked
-            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).update({
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
                 checkOut: now.toISOString(),
-                hoursWorked: hoursWorked,
-                overtime: overtime
-            })
+                hoursWorked: hoursWorked
+            }, { merge: true })
             .then(() => {
                 stopTimer();
                 isClockedIn = false;
                 updateButtonStates('checkedOut');
                 loadAttendanceData();
-                showNotification('Checked out successfully. Worked: ' + formatHoursToHhMm(hoursWorked) + 
-                      (overtime > 0 ? ' (Overtime: ' + formatHoursToHhMm(overtime) + ')' : ''), 'success');
+                showNotification('Checked out successfully. Total worked: ' + formatHoursToHhMm(hoursWorked), 'success');
             })
             .catch((error) => {
                 showNotification('Check-out error: ' + error.message, 'error');
@@ -1463,13 +1476,11 @@
             const now = new Date();
             const dateKey = formatDate(now);
             
-            // Check if today is a holiday
             if (isHoliday(dateKey)) {
                 showNotification('Today is a holiday! You cannot mark absent on a holiday.', 'error');
                 return;
             }
             
-            // Mark as absent
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
                 date: dateKey,
                 status: 'absent',
@@ -1492,7 +1503,6 @@
             const now = new Date();
             const dateKey = formatDate(now);
             
-            // Mark as holiday
             db.collection('attendance').doc(currentUser.uid).collection('records').doc(dateKey).set({
                 date: dateKey,
                 status: 'holiday',
@@ -1514,7 +1524,6 @@
         // Timer functions
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
-            
             timerInterval = setInterval(() => {
                 secondsWorked++;
                 updateTimerDisplay();
@@ -1532,7 +1541,6 @@
             const hours = Math.floor(secondsWorked / 3600);
             const minutes = Math.floor((secondsWorked % 3600) / 60);
             const seconds = secondsWorked % 60;
-            
             timerEl.textContent = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
         }
         
@@ -1540,23 +1548,22 @@
             return num.toString().padStart(2, '0');
         }
         
-        // Load attendance data for the current month
+        // Load attendance data with Smart Hour Balancing
         function loadAttendanceData() {
             if (!currentUser) return;
             
-            const startDate = new Date(currentYear, currentMonth, 1);
-            const endDate = new Date(currentYear, currentMonth + 1, 0);
+            const startDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+            const endDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
             
             let presentDays = 0;
             let absentDays = 0;
             let holidayDays = 0;
             let totalHours = 0;
-            let totalOvertime = 0;
+            let netBalance = 0;
+            const shiftTarget = dailyWorkingHours || 8;
             
-            // Clear history
             historyEl.innerHTML = '';
             
-            // Get all attendance records for the month
             db.collection('attendance').doc(currentUser.uid).collection('records')
                 .where('date', '>=', formatDate(startDate))
                 .where('date', '<=', formatDate(endDate))
@@ -1566,29 +1573,18 @@
                     querySnapshot.forEach((doc) => {
                         const record = doc.data();
                         
-                        // Count statuses
                         if (record.status === 'present') {
                             presentDays++;
-                            
-                            // Add hours if available
                             if (record.hoursWorked) {
                                 totalHours += record.hoursWorked;
+                                netBalance += (record.hoursWorked - shiftTarget);
                             }
                             
-                            // Add overtime if available
-                            if (record.overtime) {
-                                totalOvertime += record.overtime;
-                            }
-                            
-                            // Check if today's record and user is still clocked in
                             if (record.date === formatDate(new Date()) && record.checkIn && !record.checkOut) {
                                 isClockedIn = true;
-                                
-                                // Calculate seconds worked from check-in time
                                 const checkInTime = new Date(record.checkIn);
                                 const now = new Date();
                                 secondsWorked = Math.floor((now - checkInTime) / 1000);
-                                
                                 startTimer();
                                 updateButtonStates('checkedIn');
                             }
@@ -1598,24 +1594,29 @@
                             holidayDays++;
                         }
                         
-                        // Add to history
-                        addHistoryItem(record);
+                        addHistoryItem(record, shiftTarget);
                     });
                     
-                    // Update stats
                     presentDaysEl.textContent = presentDays;
                     absentDaysEl.textContent = absentDays;
                     holidayDaysEl.textContent = holidayDays;
                     workingHoursEl.textContent = formatHoursToHhMm(totalHours);
-                    overtimeHoursEl.textContent = formatHoursToHhMm(totalOvertime);
+                    
+                    if (netBalance >= 0) {
+                        overtimeHoursEl.textContent = `+${formatHoursToHhMm(netBalance)}`;
+                        overtimeHoursEl.style.color = '#10b981';
+                    } else {
+                        overtimeHoursEl.textContent = `-${formatHoursToHhMm(Math.abs(netBalance))}`;
+                        overtimeHoursEl.style.color = '#e74a3b';
+                    }
                 })
                 .catch((error) => {
                     console.error('Error loading attendance data:', error);
                 });
         }
         
-        // Add history item to the list
-        function addHistoryItem(record) {
+        // Add history item matching your exact image layout
+        function addHistoryItem(record, shiftTarget) {
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
             
@@ -1629,6 +1630,7 @@
             let statusText = '';
             let statusClass = '';
             let icon = '';
+            let overtimeBadgeHtml = '';
             
             if (record.status === 'present') {
                 statusText = 'Present';
@@ -1646,8 +1648,10 @@
                         if (record.hoursWorked) {
                             statusText += ` - ${formatHoursToHhMm(record.hoursWorked)}`;
                             
-                            if (record.overtime > 0) {
-                                statusText += `<span class="overtime-badge">+${formatHoursToHhMm(record.overtime)} OT</span>`;
+                            const diff = record.hoursWorked - shiftTarget;
+                            // केवल तभी बैज दिखाएं जब समय शिफ्ट टारगेट से ज़्यादा हो (कम होने पर कुछ नहीं दिखाना)
+                            if (diff > 0.02) { 
+                                overtimeBadgeHtml = `<span class="overtime-badge">+${formatHoursToHhMm(diff)} OT</span>`;
                             }
                         }
                     } else {
@@ -1664,15 +1668,59 @@
                 icon = '<i class="fas fa-umbrella-beach"></i>';
             }
             
+            const hasRemark = Boolean(record.remarks);
+            const remarkBtnHtml = hasRemark 
+                ? `<button class="btn-remark has-note" onclick="openRemarkModal('${record.date}', '${escapeQuotes(record.remarks)}')"><i class="fas fa-comment-dots"></i> Note</button>`
+                : `<button class="btn-remark" onclick="openRemarkModal('${record.date}', '')"><i class="fas fa-plus"></i> Add Note</button>`;
+
             historyItem.innerHTML = `
-                <span class="history-date">${formattedDate}</span>
-                <span class="history-status ${statusClass}">${icon} ${statusText}</span>
+                <div class="history-info">
+                    <span class="history-date">${formattedDate}</span>
+                    <div class="history-status-wrap">
+                        <span class="history-status ${statusClass}">${icon} ${statusText}</span>
+                        ${overtimeBadgeHtml}
+                    </div>
+                    ${hasRemark ? `<div style="width: 100%; font-size: 12.5px; color: var(--primary); margin-top: 3px;"><i class="fas fa-sticky-note"></i> ${record.remarks}</div>` : ''}
+                </div>
+                <div>${remarkBtnHtml}</div>
             `;
             
             historyEl.appendChild(historyItem);
         }
+
+        // Modal Functionality for Remarks
+        window.openRemarkModal = function(dateKey, currentRemark) {
+            activeRemarkDate = dateKey;
+            modalDateTitle.innerHTML = `<i class="fas fa-edit"></i> Remark for ${dateKey}`;
+            remarkInput.value = currentRemark || '';
+            remarkModal.style.display = 'flex';
+        };
+
+        closeRemarkModal.addEventListener('click', () => {
+            remarkModal.style.display = 'none';
+        });
+
+        saveRemarkBtn.addEventListener('click', () => {
+            if (!activeRemarkDate || !currentUser) return;
+            const remarkText = remarkInput.value.trim();
+
+            db.collection('attendance').doc(currentUser.uid).collection('records').doc(activeRemarkDate).set({
+                remarks: remarkText,
+                remarkUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true })
+            .then(() => {
+                remarkModal.style.display = 'none';
+                showNotification('Remark saved successfully', 'success');
+                loadAttendanceData();
+                if (analyticsSection.style.display === 'block') {
+                    loadAnalyticsData();
+                }
+            })
+            .catch(err => {
+                showNotification('Error saving remark: ' + err.message, 'error');
+            });
+        });
         
-        // Update button states based on current status
         function updateButtonStates(status) {
             if (status === 'checkedIn') {
                 checkinBtn.disabled = true;
@@ -1685,29 +1733,24 @@
                 absentBtn.disabled = true;
                 holidayBtn.disabled = true;
             } else {
-                // Check if today is already marked
                 const todayKey = formatDate(new Date());
                 
                 db.collection('attendance').doc(currentUser.uid).collection('records').doc(todayKey).get()
                     .then((doc) => {
                         if (doc.exists) {
                             const record = doc.data();
-                            
                             if (record.status === 'present') {
                                 if (record.checkOut) {
-                                    // Already checked out
                                     checkinBtn.disabled = true;
                                     checkoutBtn.disabled = true;
                                     absentBtn.disabled = true;
                                     holidayBtn.disabled = true;
                                 } else {
-                                    // Checked in but not out
                                     checkinBtn.disabled = true;
                                     checkoutBtn.disabled = false;
                                     absentBtn.disabled = true;
                                     holidayBtn.disabled = true;
                                     
-                                    // Start timer
                                     isClockedIn = true;
                                     if (record.checkIn) {
                                         const checkInTime = new Date(record.checkIn);
@@ -1716,26 +1759,19 @@
                                         startTimer();
                                     }
                                 }
-                            } else if (record.status === 'absent') {
-                                checkinBtn.disabled = true;
-                                checkoutBtn.disabled = true;
-                                absentBtn.disabled = true;
-                                holidayBtn.disabled = true;
-                            } else if (record.status === 'holiday') {
+                            } else {
                                 checkinBtn.disabled = true;
                                 checkoutBtn.disabled = true;
                                 absentBtn.disabled = true;
                                 holidayBtn.disabled = true;
                             }
                         } else {
-                            // No record for today, check if it's a holiday
                             if (isHoliday(todayKey)) {
                                 checkinBtn.disabled = true;
                                 checkoutBtn.disabled = true;
                                 absentBtn.disabled = true;
                                 holidayBtn.disabled = true;
                             } else {
-                                // Enable all buttons
                                 checkinBtn.disabled = false;
                                 checkoutBtn.disabled = true;
                                 absentBtn.disabled = false;
@@ -1746,15 +1782,12 @@
             }
         }
         
-        // Check if a date is a holiday
         function isHoliday(dateString) {
             return predefinedHolidays.some(holiday => holiday.date === dateString);
         }
         
-        // Render holiday list
         function renderHolidayList() {
             holidayListEl.innerHTML = '';
-            
             predefinedHolidays.forEach(holiday => {
                 const holidayItem = document.createElement('div');
                 holidayItem.className = 'holiday-item';
@@ -1769,12 +1802,11 @@
                     <span>${formattedDate} - ${holiday.name}</span>
                     <span class="status-holiday">Holiday</span>
                 `;
-                
                 holidayListEl.appendChild(holidayItem);
             });
         }
         
-        // Analytics functions
+        // Analytics
         viewAnalyticsBtn.addEventListener('click', () => {
             loadAnalyticsData();
             dashboardSection.style.display = 'none';
@@ -1794,27 +1826,24 @@
             generatePDF();
         });
         
-        // Load analytics data
         function loadAnalyticsData() {
             if (!currentUser) return;
             
-            const startDate = new Date(currentYear, currentMonth, 1);
-            const endDate = new Date(currentYear, currentMonth + 1, 0);
+            const startDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+            const endDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
             
             let totalPresent = 0;
             let totalAbsent = 0;
             let totalHolidays = 0;
             let totalHours = 0;
-            let totalOvertime = 0;
+            let netBalance = 0;
+            const shiftTarget = dailyWorkingHours || 8;
             
-            // Clear table
             analyticsTableBody.innerHTML = '';
             
-            // Set report details
             reportEmployeeName.textContent = `Employee: ${userData.name}`;
             reportPeriod.textContent = `Period: ${startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
             
-            // Get all attendance records for the month
             db.collection('attendance').doc(currentUser.uid).collection('records')
                 .where('date', '>=', formatDate(startDate))
                 .where('date', '<=', formatDate(endDate))
@@ -1824,18 +1853,11 @@
                     querySnapshot.forEach((doc) => {
                         const record = doc.data();
                         
-                        // Count statuses
                         if (record.status === 'present') {
                             totalPresent++;
-                            
-                            // Add hours if available
                             if (record.hoursWorked) {
                                 totalHours += record.hoursWorked;
-                            }
-                            
-                            // Add overtime if available
-                            if (record.overtime) {
-                                totalOvertime += record.overtime;
+                                netBalance += (record.hoursWorked - shiftTarget);
                             }
                         } else if (record.status === 'absent') {
                             totalAbsent++;
@@ -1843,26 +1865,29 @@
                             totalHolidays++;
                         }
                         
-                        // Add to analytics table
-                        addAnalyticsTableRow(record);
+                        addAnalyticsTableRow(record, shiftTarget);
                     });
                     
-                    // Update analytics stats
                     totalPresentEl.textContent = totalPresent;
                     totalAbsentEl.textContent = totalAbsent;
                     totalHolidaysEl.textContent = totalHolidays;
                     totalHoursEl.textContent = formatHoursToHhMm(totalHours);
-                    totalOvertimeEl.textContent = formatHoursToHhMm(totalOvertime);
+                    
+                    if (netBalance >= 0) {
+                        totalOvertimeEl.textContent = `+${formatHoursToHhMm(netBalance)}`;
+                        totalOvertimeEl.style.color = '#10b981';
+                    } else {
+                        totalOvertimeEl.textContent = `-${formatHoursToHhMm(Math.abs(netBalance))}`;
+                        totalOvertimeEl.style.color = '#e74a3b';
+                    }
                 })
                 .catch((error) => {
                     console.error('Error loading analytics data:', error);
                 });
         }
         
-        // Add row to analytics table
-        function addAnalyticsTableRow(record) {
+        function addAnalyticsTableRow(record, shiftTarget) {
             const row = document.createElement('tr');
-            
             const date = new Date(record.date);
             const formattedDate = date.toLocaleDateString('en-US', { 
                 weekday: 'short', 
@@ -1871,86 +1896,65 @@
                 day: 'numeric' 
             });
             
-            let statusText = '';
-            let statusClass = '';
-            
-            if (record.status === 'present') {
-                statusText = 'Present';
-                statusClass = 'status-present';
-            } else if (record.status === 'absent') {
-                statusText = 'Absent';
-                statusClass = 'status-absent';
-            } else if (record.status === 'holiday') {
-                statusText = 'Holiday';
-                statusClass = 'status-holiday';
-            }
+            let statusText = record.status.toUpperCase();
+            let statusClass = `status-${record.status}`;
             
             let checkInTime = '-';
             let checkOutTime = '-';
             let hoursWorked = '-';
-            let overtime = '-';
-            let lateBy = '-';
+            let dailyOtHtml = '-';
             
             if (record.checkIn) {
                 const checkIn = new Date(record.checkIn);
                 checkInTime = formatTimeForDisplay(checkIn.toTimeString().substring(0, 5));
-                
-                // Calculate late by
-                const officeStart = new Date(date);
-                const [officeHours, officeMinutes] = officeStartTime.split(':');
-                officeStart.setHours(parseInt(officeHours), parseInt(officeMinutes), 0, 0);
-                
-                if (checkIn > officeStart) {
-                    const lateMs = checkIn - officeStart;
-                    const lateMins = Math.floor(lateMs / 60000);
-                    lateBy = `${lateMins} mins`;
-                }
             }
-            
             if (record.checkOut) {
                 const checkOut = new Date(record.checkOut);
                 checkOutTime = formatTimeForDisplay(checkOut.toTimeString().substring(0, 5));
             }
-            
             if (record.hoursWorked) {
                 hoursWorked = formatHoursToHhMm(record.hoursWorked);
-            }
-            
-            if (record.overtime) {
-                overtime = formatHoursToHhMm(record.overtime);
+                const diff = record.hoursWorked - shiftTarget;
+                // टेबल में भी केवल अतिरिक्त काम होने पर ही ओवर-टाइम दिखेगा
+                if (diff > 0.02) {
+                    dailyOtHtml = `<span style="color:#fd7e14; font-weight:bold;">${formatHoursToHhMm(diff)}</span>`;
+                } else {
+                    dailyOtHtml = `-`;
+                }
             }
             
             row.innerHTML = `
-                <td>${formattedDate}</td>
+                <td><strong>${formattedDate}</strong></td>
                 <td><span class="${statusClass}">${statusText}</span></td>
                 <td>${checkInTime}</td>
                 <td>${checkOutTime}</td>
                 <td>${hoursWorked}</td>
-                <td>${overtime}</td>
-                <td>${lateBy}</td>
+                <td>${dailyOtHtml}</td>
+                <td style="max-width: 180px; font-size: 13px; color: var(--primary);">${record.remarks || '-'}</td>
+                <td>
+                    <button class="btn-remark" onclick="openRemarkModal('${record.date}', '${escapeQuotes(record.remarks || '')}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </td>
             `;
-            
             analyticsTableBody.appendChild(row);
         }
         
-        // Generate PDF report
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            const monthStr = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
             
-            // Add title
             doc.setFontSize(20);
             doc.text('Employee Attendance Report', 105, 15, { align: 'center' });
             
-            // Add employee details
             doc.setFontSize(12);
             doc.text(`Employee: ${userData.name}`, 14, 25);
-            doc.text(`Period: ${new Date(currentYear, currentMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`, 14, 32);
+            doc.text(`Period: ${monthStr}`, 14, 32);
             
-            // Add summary table
             doc.autoTable({
                 startY: 40,
-                head: [['Total Present', 'Total Absent', 'Total Holidays', 'Total Hours', 'Overtime Hours']],
+                head: [['Total Present', 'Total Absent', 'Total Holidays', 'Total Hours', 'Net Overtime']],
                 body: [[
                     totalPresentEl.textContent,
                     totalAbsentEl.textContent,
@@ -1959,17 +1963,16 @@
                     totalOvertimeEl.textContent
                 ]],
                 theme: 'grid',
-                headStyles: { fillColor: [78, 115, 223] }
+                headStyles: { fillColor: [67, 97, 238] }
             });
             
-            // Add detailed attendance table
-            const tableColumn = ["Date", "Status", "Check In", "Check Out", "Hours", "Overtime", "Late By"];
+            const tableColumn = ["Date", "Status", "Check In", "Check Out", "Hours", "Overtime", "Remarks / Reason"];
             const tableRows = [];
             
             const rows = analyticsTableBody.querySelectorAll('tr');
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
-                const rowData = [
+                tableRows.push([
                     cells[0].textContent,
                     cells[1].textContent,
                     cells[2].textContent,
@@ -1977,26 +1980,23 @@
                     cells[4].textContent,
                     cells[5].textContent,
                     cells[6].textContent
-                ];
-                tableRows.push(rowData);
+                ]);
             });
             
             doc.autoTable({
-                startY: doc.lastAutoTable.finalY + 20,
+                startY: doc.lastAutoTable.finalY + 15,
                 head: [tableColumn],
                 body: tableRows,
                 theme: 'grid',
-                headStyles: { fillColor: [78, 115, 223] },
-                styles: { fontSize: 9 },
+                headStyles: { fillColor: [67, 97, 238] },
+                styles: { fontSize: 8.5 },
                 margin: { left: 14, right: 14 }
             });
             
-            // Save the PDF
-            doc.save(`attendance_report_${currentYear}_${currentMonth+1}_${userData.username}.pdf`);
+            doc.save(`attendance_${userData.username}_${monthStr.replace(' ', '_')}.pdf`);
             showNotification('PDF downloaded successfully!', 'success');
         }
         
-        // Utility functions
         function formatDate(date) {
             const year = date.getFullYear();
             const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -2006,77 +2006,41 @@
         
         function formatTimeForDisplay(timeStr) {
             if (!timeStr) return '';
-            
             const [hours, minutes] = timeStr.split(':');
             const hourNum = parseInt(hours);
             const period = hourNum >= 12 ? 'PM' : 'AM';
             const displayHour = hourNum % 12 || 12;
-            
             return `${displayHour}:${minutes} ${period}`;
         }
         
         function formatHoursToHhMm(hours) {
             if (!hours) return '0h 0m';
-            
-            const totalMinutes = hours * 60;
+            const totalMinutes = Math.round(hours * 60);
             const h = Math.floor(totalMinutes / 60);
             const m = Math.round(totalMinutes % 60);
-            
             return `${h}h ${m}m`;
         }
-        
-        function calculateHoursWorked() {
-            const now = new Date();
-            const checkInTime = new Date(now);
-            checkInTime.setSeconds(checkInTime.getSeconds() - secondsWorked);
-            
-            // Calculate total hours worked
-            const hoursWorked = secondsWorked / 3600;
-            
-            // Calculate overtime (hours beyond daily working hours)
-            let overtime = 0;
-            if (hoursWorked > dailyWorkingHours) {
-                overtime = hoursWorked - dailyWorkingHours;
-            }
-            
-            return {
-                hoursWorked: hoursWorked,
-                overtime: overtime
-            };
+
+        function escapeQuotes(str) {
+            if (!str) return '';
+            return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
         }
         
-        // Show notification
         function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notification-text');
-            
-            notification.className = 'notification ' + type;
             notificationText.textContent = message;
-            notification.classList.add('show');
-            
+            notification.className = `notification show ${type}`;
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 3500);
         }
         
         // Help Guide
-        helpBtn.addEventListener('click', () => {
-            guideModal.style.display = 'flex';
-        });
-        
-        closeGuide.addEventListener('click', () => {
-            guideModal.style.display = 'none';
-        });
-        
-        // Close modal when clicking outside
+        helpBtn.addEventListener('click', () => { guideModal.style.display = 'flex'; });
+        closeGuide.addEventListener('click', () => { guideModal.style.display = 'none'; });
         window.addEventListener('click', (event) => {
-            if (event.target === guideModal) {
-                guideModal.style.display = 'none';
-            }
+            if (event.target === guideModal) guideModal.style.display = 'none';
+            if (event.target === remarkModal) remarkModal.style.display = 'none';
         });
-        
-        // Initialize button states
-        updateButtonStates();
     </script>
 </body>
 </html>
